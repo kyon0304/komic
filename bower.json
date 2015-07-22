@@ -1,0 +1,15 @@
+{
+  "name": "komic",
+  "version": "0.0.0",
+  "authors": [
+    "hxgdzyuyi <hxgdzyuyi@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
