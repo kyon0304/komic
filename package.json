@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "$(npm bin)/bower install"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +12,7 @@
     "babel": "^5.8.3",
     "babel-core": "^5.8.3",
     "babel-loader": "^5.3.2",
+    "bower": "^1.4.1",
     "css-loader": "^0.15.5",
     "grunt": "^0.4.5",
     "grunt-webpack": "^1.0.11",
