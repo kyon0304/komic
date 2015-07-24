@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   , 'webpack-dev-server': {
       options: {
         webpack: webpackConfig
-      , contentBase: './fixtures/web-comic-view/'
+      , contentBase: './fixtures/ancient-egypt/'
       , publicPath: '/assets/'
       , port: 8000
       , hot: true
