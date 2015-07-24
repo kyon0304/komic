@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   , 'webpack-dev-server': {
       options: {
         webpack: webpackConfig
-      , contentBase: './src'
+      , contentBase: './fixtures/web-comic-view/'
       , publicPath: '/assets/'
       , port: 8000
       , hot: true
