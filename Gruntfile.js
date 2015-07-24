@@ -21,4 +21,9 @@ module.exports = function(grunt) {
       }
     }
   })
+
+  grunt.registerTask('s'
+    , '`grunt s` is alias task for `grunt webpack-dev-server`'
+    , ['webpack-dev-server'])
+
 }
