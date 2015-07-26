@@ -34,6 +34,12 @@ module.exports = {
       }
     ]
   }
+, babel: {
+   optional: ["runtime"]
+  }
+, stylus: {
+    use: [ (require('nib'))() ]
+  }
 , plugins: [
     new webpack.HotModuleReplacementPlugin()
   , new webpack.NoErrorsPlugin()

@@ -1,0 +1,76 @@
+@import 'nib'
+
+@import './ui/hardcover'
+
+.hardcover
+  ::after
+  ::before
+    content: ''
+  margin: 20px auto
+  cursor: pointer
+  .btn-read
+    display: inline-block
+    color: #2c3e50
+    text-decoration: none
+    text-transform: uppercase
+    border: 2px solid #2c3e50
+    margin-top: 100px
+    font-size: 0.7em
+    font-weight: 700
+    padding: 0.1em 0.4em
+    text-align: center
+    transition: color 0.3s, border-color 0.3s
+    &:hover
+      border-color: #16a085
+      color: #16a085
+
+
+.hardcover:hover > .hardcover-front
+  transform: rotateY(-145deg) translateZ(0)
+  z-index: 0
+
+.hardcover:hover > .page li:nth-child(1)
+  transform: rotateY(-30deg)
+  transition-duration: 1.5s
+
+.hardcover:hover > .page li:nth-child(2)
+  transform: rotateY(-35deg)
+  transition-duration: 1.8s
+
+.hardcover:hover > .page li:nth-child(3)
+  transform: rotateY(-118deg)
+  transition-duration: 1.6s
+
+.hardcover:hover > .page li:nth-child(4)
+  transform: rotateY(-130deg)
+  transition-duration: 1.4s
+
+.hardcover:hover > .page li:nth-child(5)
+  transform: rotateY(-140deg)
+  transition-duration: 1.2s
+
+.hardcover-front
+  transition: all 0.8s ease, z-index 0.6s
+
+.page > li
+  width: 100%
+  height: 100%
+  transform-origin: left center
+  transition-property: transform
+  transition-timing-function: ease
+
+.page > li:nth-child(1)
+  transition-duration: 0.6s
+
+.page > li:nth-child(2)
+  transition-duration: 0.6s
+
+.page > li:nth-child(3)
+  transition-duration: 0.4s
+
+.page > li:nth-child(4)
+  transition-duration: 0.5s
+
+.page > li:nth-child(5)
+  transition-duration: 0.6s
+
