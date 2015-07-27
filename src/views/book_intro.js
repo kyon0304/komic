@@ -44,9 +44,9 @@ class BookIntroDetail extends React.Component {
     var model = this.props.model
     return (
       <div className="book-intro-detail">
-        <h1>Sketches</h1>
+        <h1>{ model.get('name') }</h1>
         <p className="author">
-          作者：{ model.get('author') }
+          By { model.get('author') }
         </p>
         <p className="description">
           { model.get('description') }
