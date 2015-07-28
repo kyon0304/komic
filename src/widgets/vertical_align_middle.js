@@ -1,5 +1,7 @@
 import React from 'react'
 
+// TODO(yangqing): use `flex-box` instead of `table`
+
 var wrapperStyle = { display: 'table' }
   , cellStyle = { display: 'table-cell', 'vertical-align': 'middle' }
 
