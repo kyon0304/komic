@@ -1,5 +1,6 @@
 import React from 'react'
 import VertialAlignMiddle from '../widgets/vertical_align_middle'
+import { Link } from 'react-router'
 
 class BookCover extends React.Component {
   render() {
@@ -18,7 +19,7 @@ class BookCover extends React.Component {
           <li>
             <VertialAlignMiddle>
               <div style={ Object.assign(model.getBookCoverSize(), {textAlign: 'center'}) }>
-                <a href="#" className="btn btn-read">阅 读</a>
+                <Link to="reader" className="btn btn-read">阅 读</Link>
               </div>
             </VertialAlignMiddle>
           </li>
