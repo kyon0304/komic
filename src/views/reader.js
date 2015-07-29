@@ -4,9 +4,10 @@ import { Link } from 'react-router'
 export default class extends React.Component {
   render() {
     var num = 0
-    , next = num + 1
-    , pages = this.props.model.getBookPages()
-    , viewer
+      , next = num + 1
+      , model = this.props.model
+      , pages = model.getBookPages()
+      , viewer
 
     if (this.props.params.page != undefined) {
       num = this.props.params.page
@@ -16,7 +17,7 @@ export default class extends React.Component {
     if(next < pages) {
       viewer = (
           <Link to="reader" params={{page: next.toString()}}>
-            <img src= { './images/' + num + '.jpeg' } />
+            <img src= { model.getBookImg(num) } />
           </Link>
       )
     } else
