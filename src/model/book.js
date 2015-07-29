@@ -16,4 +16,12 @@ export default Model.extend({
       src: cover.src
     }, this.getBookCoverSize())
   }
+
+, getBookImg(index) {
+    return this.get('images')[index].src
+  }
+
+, getBookPages() {
+    return this.get('images').length
+  }
 })

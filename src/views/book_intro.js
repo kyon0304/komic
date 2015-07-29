@@ -19,7 +19,7 @@ class BookCover extends React.Component {
           <li>
             <VertialAlignMiddle>
               <div style={ Object.assign(model.getBookCoverSize(), {textAlign: 'center'}) }>
-                <Link to="reader" className="btn btn-read">阅 读</Link>
+                <Link to="reader" params={{page: "0"}} className="btn btn-read">阅 读</Link>
               </div>
             </VertialAlignMiddle>
           </li>
