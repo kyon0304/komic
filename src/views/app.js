@@ -1,11 +1,13 @@
 import React from 'react'
-import BookIntroView from './book_intro'
+import Router from 'react-router'
+
+var { RouteHandler } = Router
 
 export default class extends React.Component {
   render() {
     return (
       <div className="main">
-        <BookIntroView model={this.props.model}/>
+        <RouteHandler model={this.props.model}/>
       </div>
     )
   }
