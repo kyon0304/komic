@@ -3,9 +3,24 @@ import { Link } from 'react-router'
 
 export default class extends React.Component {
   render() {
-    var page = 0
-    if (this.props.params.page != undefined)
-      page = this.props.params.page
+    var num = 0
+    , next = num + 1
+    , pages = this.props.model.getBookPages()
+    , viewer
+
+    if (this.props.params.page != undefined) {
+      num = this.props.params.page
+      next = Number.parseInt(num) + 1
+    }
+
+    if(next < pages) {
+      viewer = (
+          <Link to="reader" params={{page: next.toString()}}>
+            <img src= { './images/' + num + '.jpeg' } />
+          </Link>
+      )
+    } else
+      viewer = (<span>看完了</span>)
 
     return (
       <div>
@@ -13,7 +28,7 @@ export default class extends React.Component {
         <br/>
         <h1> #TODO 这是漫画阅读器 </h1>
         <div>
-          <img src= { './images/' + page + '.jpeg' } />
+          { viewer }
         </div>
       </div>
     )
