@@ -58,8 +58,6 @@ class BookIntroDetail extends React.Component {
 }
 
 export default class extends React.Component {
-  componentDidMount() {
-  }
   render() {
     return (
       <div className="book-intro">
