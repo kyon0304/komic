@@ -19,7 +19,7 @@ class AppModel extends Model {
 
   setModel(name, model) {
     if (this.get(name)) {
-      throw Error(`Model ${name} hasn been defined`)
+      throw Error(`Model ${name} has been defined`)
     }
     this.set(name, model)
     return this
