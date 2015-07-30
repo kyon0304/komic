@@ -11,6 +11,11 @@ export default class extends React.Component {
     canvas.on('turn:nextPage', this.resetPageRouter)
   }
 
+  componentWillUnmount() {
+    var canvas = app.getModel('canvas')
+    canvas.off('turn:nextPage', this.resetPageRouter)
+  }
+
   handleClick() {
     var canvas = app.getModel('canvas')
     canvas.trigger('turn:nextPage')
