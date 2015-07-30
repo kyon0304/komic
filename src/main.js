@@ -6,17 +6,14 @@ import React from 'react'
 import Router from 'react-router'
 import app from 'app'
 
-import BookModel from 'models/book'
 import routes from 'routes'
 
 $(document).on('click', 'a[href="#"]', (e) => {
   e.preventDefault()
 })
 
-var bookModel = new BookModel()
+var bookModel = app.createModel('book')
   , appViewWrapper = $('<div>', {'class': 'react-app-wrapper'})
-
-app.setModel('book', bookModel)
 
 $('body').prepend(appViewWrapper)
 
