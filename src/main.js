@@ -5,7 +5,7 @@ import $ from 'jquery'
 import React from 'react'
 import Router from 'react-router'
 
-import BookModel from 'model/book'
+import BookModel from 'models/book'
 import routes from 'routes'
 
 var bookModel = new BookModel()
