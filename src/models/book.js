@@ -12,7 +12,7 @@ export default Model.extend({
 
 , getCanvasModelInfo() {
     return {
-      pageTotal: this.get('images').length
+      totalPage: this.get('images').length
     }
   }
 
@@ -21,6 +21,10 @@ export default Model.extend({
     return Object.assign({
       src: cover.src
     }, this.getBookCoverSize())
+  }
+
+, getCurrentImage(page) {
+    return this.get('images')[page - 1]
   }
 
 , getBookImg(index) {

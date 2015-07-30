@@ -20,7 +20,12 @@ $('body').prepend(appViewWrapper)
 bookModel.fetch({ url: '/content.json' })
   .done(() => {
     app.createModel('canvas')
-    Router.run(routes, Router.HashLocation, (Root) => {
+    var router = Router.create({
+      routes: routes
+    , location: Router.HashLocation
+    })
+    router.run((Root) => {
       React.render(<Root model={ bookModel } />, appViewWrapper[0])
     })
+    app.set('router', router)
   })
