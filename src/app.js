@@ -2,8 +2,6 @@ import { Model } from 'backbone'
 import CanvasModel from 'models/canvas'
 import BookModel from 'models/book'
 
-
-
 class AppModel extends Model {
 
   constructor(options) {
