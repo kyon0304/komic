@@ -4,7 +4,7 @@ export default class extends Model {
 
   constructor(options) {
     super(options)
-    if (options.pageTotal && options.pageTotal > 0) {
+    if (options.totalPage && options.totalPage > 0) {
       this.set('currentPage', 1)
     }
     this.on('turn:nextPage', this.turnNextPage)
@@ -12,7 +12,7 @@ export default class extends Model {
 
   defaults() {
     return {
-      pageTotal: 0
+      totalPage: 0
     , currentPage: 0
     }
   }
