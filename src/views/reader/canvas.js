@@ -8,12 +8,12 @@ export default class extends React.Component {
 
   componentWillMount() {
     var canvas = app.getModel('canvas')
-    canvas.on('turn:nextPage', this.resetPageRouter)
+    canvas.on('turn:nextPage', this.transitionToPage)
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
-    canvas.off('turn:nextPage', this.resetPageRouter)
+    canvas.off('turn:nextPage', this.transitionToPage)
   }
 
   handleClick() {
@@ -21,7 +21,7 @@ export default class extends React.Component {
     canvas.trigger('turn:nextPage')
   }
 
-  resetPageRouter() {
+  transitionToPage() {
     var router = app.get('router')
       , canvas = app.getModel('canvas')
     router.transitionTo('page', { page: canvas.get('currentPage') })
