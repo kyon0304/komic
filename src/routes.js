@@ -5,6 +5,8 @@ import AppView from 'views/app'
 import BookIntroView from 'views/book_intro'
 import ReaderView from 'views/reader/index'
 
+// Combine the behavior of DefaultRoute and Redirect
+//   See more: http://tinyurl.com/qj3zj57
 function RedirectTo(destination, params = {}) {
   return class extends React.Component {
     static willTransitionTo(transition) {
