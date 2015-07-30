@@ -26,12 +26,4 @@ export default Model.extend({
 , getCurrentImage(page) {
     return this.get('images')[page - 1]
   }
-
-, getBookImg(index) {
-    return this.get('images')[index].src
-  }
-
-, getBookPages() {
-    return this.get('images').length
-  }
 })
