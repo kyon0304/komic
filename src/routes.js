@@ -1,9 +1,9 @@
 import React from 'react'
 import { Route, DefaultRoute } from 'react-router'
 
-import AppView from './views/app'
-import BookIntroView from './views/book_intro'
-import ReaderView from './views/reader'
+import AppView from 'views/app'
+import BookIntroView from 'views/book_intro'
+import ReaderView from 'views/reader/index'
 
 export default (
    <Route path="/" handler={ AppView }>
