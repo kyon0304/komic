@@ -2,11 +2,15 @@ import { Model } from 'backbone'
 import CanvasModel from 'models/canvas'
 import BookModel from 'models/book'
 
+
+
 class AppModel extends Model {
-  get modelAndCreateFuncMap() {
-    return {
-      book: 'createBookModel'
-    , canvas: 'createCanvasModel'
+
+  constructor(options) {
+    super(options)
+    this.modelAndCreateFuncMap = {
+        book: 'createBookModel'
+      , canvas: 'createCanvasModel'
     }
   }
 
