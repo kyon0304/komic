@@ -26,4 +26,8 @@ export default Model.extend({
 , getCurrentImage(page) {
     return this.get('images')[page - 1]
   }
+
+, getContentInfo() {
+    //TODO return grouped contents
+  }
 })
