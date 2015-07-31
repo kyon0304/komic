@@ -14,6 +14,9 @@ export default class extends React.Component {
             <a href="#" title="页码" className="btn">{ currentPage }</a>
           </li>
           <li>
+            <Link to="content" title="目录" className="btn">总</Link>
+          </li>
+          <li>
             <Link to="home" href="#" title="返回" className="btn">返</Link>
           </li>
         </ul>

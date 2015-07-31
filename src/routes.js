@@ -4,6 +4,7 @@ import { Route, DefaultRoute } from 'react-router'
 import AppView from 'views/app'
 import BookIntroView from 'views/book_intro'
 import ReaderView from 'views/reader/index'
+import ContentView from 'views/reader/content'
 
 // Combine the behavior of DefaultRoute and Redirect
 //   See more: http://tinyurl.com/qj3zj57
@@ -23,6 +24,7 @@ export default (
      <Route name="reader" path="reader">
         <Route name="page" path="page/:page" handler={ ReaderView } />
         <Route handler={ RedirectTo('page', { page: 1 }) } />
+        <Route name="content" path="content" handler={ ContentView } />
      </Route>
    </Route>
 )
