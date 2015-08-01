@@ -11,7 +11,7 @@ module.exports = function(grunt) {
       options: {
         webpack: webpackConfig
       , contentBase: './fixtures/ancient-egypt/'
-      , publicPath: '/assets/'
+      , publicPath: '/'
       , port: 8000
       , hot: true
       }
