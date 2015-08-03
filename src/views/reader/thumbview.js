@@ -8,10 +8,10 @@ import Panel from './panel'
 export default class extends React.Component {
   render() {
     var book = app.getModel('book')
-      , contentInfo// = book.getContentInfo()
-      , contentView = []
+      , thumbInfo// = book.getthumbInfo()
+      , thumbView = []
 
-    contentInfo = [
+    thumbInfo = [
       [
         {
           "page": 1
@@ -128,23 +128,23 @@ export default class extends React.Component {
       ]
     ]
 
-    function fillItem(contentItem) {
-      var page = contentItem.page
-        , info = contentItem.info
+    function fillItem(thumbItem) {
+      var page = thumbItem.page
+        , info = thumbItem.info
 
       return (
         <li className="item">
-          <Link to="page" className="content" style= { info } params={{ page: page}} >
+          <Link to="page" className="thumb" style= { info } params={{ page: page}} >
           </Link>
         </li>
       )
     }
 
-    contentView.push(
-      contentInfo.map(function(contentRow) {
+    thumbView.push(
+      thumbInfo.map(function(thumbList) {
         return (
-          <ul className="row">
-            { contentRow.map(fillItem) }
+          <ul className="list">
+            { thumbList.map(fillItem) }
           </ul>
         )
       })
@@ -154,7 +154,7 @@ export default class extends React.Component {
       <div>
         <Panel />
         <div className="backdrop">
-          { contentView }
+          { thumbView }
         </div>
       </div>
     )
