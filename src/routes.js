@@ -23,8 +23,8 @@ export default (
      <DefaultRoute name="home" handler={ BookIntroView }/>
      <Route name="reader" path="reader">
         <Route name="page" path="page/:page" handler={ ReaderView } />
-        <Route handler={ RedirectTo('page', { page: 1 }) } />
         <Route name="content" path="content" handler={ ContentView } />
+        <Route handler={ RedirectTo('page', { page: 1 }) } />
      </Route>
    </Route>
 )
