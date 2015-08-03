@@ -14,128 +14,148 @@ export default class extends React.Component {
     contentInfo = [
       [
         {
-          page: "1"
-        , info: {
-            background: "url(http://placeimg.com/960/720/any) 0 0"
-          , width: "240px"
-          , height: "240px"
+          "page": 1
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "0 0"
+          , "width": 240
+          , "height": 240
           }
         }
       , {
-          page: "2"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -240px 0"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 2
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-240px  0"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "3"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -480px 0"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 3
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-480px 0"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "4"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -720px 0"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 4
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-720px 0"
+          , "width": 240
+          , "height": 240
+          }
         }
       ]
     , [
         {
-          page: "5"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) 0 -240px"
-          , width: "360px"
-          , height: "240px"
-           }
+          "page": 5
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "0 -240px"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "6"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -360px -240px"
-          , width: "120px"
-          , height: "240px"
-           }
+          "page": 6
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-240px -240px"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "7"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -480px -240px"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 7
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-480px -240px"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "8"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -720px -240px"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 8
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-720px -240px"
+          , "width": 240
+          , "height": 240
+          }
         }
       ]
     , [
         {
-          page: "9"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) 0 -480px"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 9
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "0 -480px"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "10"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -240px -480px"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 10
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-240px -480px"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "11"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -480px -480px"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 11 
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-480px -480px"
+          , "width": 240
+          , "height": 240
+          }
         }
       , {
-          page: "12"
-          , info: {
-            background: "url(http://placeimg.com/960/720/any) -720px -480px"
-          , width: "240px"
-          , height: "240px"
-           }
+          "page": 12 
+        , "info": {
+            "backgroundImage": 'url("http://placeimg.com/960/720/any")'
+          , "backgroundPosition": "-720px -480px"
+          , "width": 240
+          , "height": 240
+          }
         }
       ]
     ]
 
-    contentView.push(<div className="backdrop">)
-    for (let contentRow of contentInfo) {
-      contentView.push( <ul className="row"> )
-      for (let contentItem of contentRow) {
-        contentView.push(
-          <li className="item">
-            <Link to="page" params={{page: contentItem.page}}>
-              <div className="content" { ...contentItem.info }/>
-            </Link>
-          </li>
-        )
-      }
-      contentView.push(</ul>)
+    function fillItem(contentItem) {
+      var page = contentItem.page
+        , info = contentItem.info
+
+      return (
+        <li className="item">
+          <Link to="page" className="content" style= { info } params={{ page: page}} >
+          </Link>
+        </li>
+      )
     }
-    contentView.push(</div>)
+
+    contentView.push(
+      contentInfo.map(function(contentRow) {
+        return (
+          <ul className="row">
+            { contentRow.map(fillItem) }
+          </ul>
+        )
+      })
+    )
 
     return (
       <div>
         <Panel />
-        { contentView }
+        <div className="backdrop">
+          { contentView }
+        </div>
       </div>
     )
   }
