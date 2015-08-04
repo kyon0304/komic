@@ -10,14 +10,16 @@ export default class extends React.Component {
     var book = app.getModel('book')
       , thumbInfo = book.getThumbViewInfo(960, 5)
       , thumbView = []
+      , currentPage = this.props.params.cp
 
     function fillItem(thumbItem) {
       var page = thumbItem.page
         , size = thumbItem.size
         , useTag = "<use xlink:href=" + thumbItem.src + ">"
+        , cn = (+page == +currentPage) ? "item current" : "item"
 
       return (
-        <li className="item">
+        <li className={ cn }>
           <Link to="page" className="thumb" style= { size } params={{ page: page}} >
             <svg className="thumb" style={ size }
               dangerouslySetInnerHTML={{__html: useTag}}>
