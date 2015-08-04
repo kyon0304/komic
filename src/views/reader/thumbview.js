@@ -6,6 +6,32 @@ import routes from 'routes'
 import Panel from './panel'
 
 export default class extends React.Component {
+
+  function generateThumbs() {
+    var book = app.getModel('book')
+      , info = book.getTumbviewInfo()
+      , totalPage = info.totalPage
+      , totalSrc = info.src
+      , thumbnails = []
+
+    for (idx = 0; idx < totalPage; idx++) {
+      thumbnails.push({
+        src: totalSrc + "#" + idx
+      , page: idx + 1
+      , size: book.getThumbnailSize(this.page)
+      })
+    }
+
+    return thumbnails
+  }
+
+  function arrangeThumbs(viewWidth, minMargin) {
+    var thumbnails = generateThumbs()
+    thumbnails.map(function(){
+
+    })
+  }
+
   render() {
     var book = app.getModel('book')
       , thumbInfo = book.getThumbViewInfo(960, 5)

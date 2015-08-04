@@ -27,6 +27,22 @@ export default Model.extend({
     return this.get('images')[page - 1]
   }
 
+, getThumbviewInfo() {
+    return {
+      src: this.get('thumbnails').path
+    , totalPage: this.get('images').length
+    }
+  }
+
+, getThumbnailSize(page) {
+  var img = this.get('images')[page-1]
+    , thumbHeight = this.get('thumbnails').height
+  return {
+    width: Math.ceil(img.width * thumbHeight / img.height)
+  , height: thumbHeight
+  }
+}
+
 , getThumbViewInfo(viewWidth, minMargin) {
     var currentWidth = 0
       , thumbWidth
