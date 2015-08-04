@@ -1,33 +1,27 @@
-*
+.backdrop
   margin: 0
   padding: 0
   border: 0
-
-.backdrop
   min-width: 960px
   padding: 50px 30px
-
-.list
-  list-style: none
-  font-size: 0
-  width: 100%
-  display: inline-flex
-  justify-content: space-between
-  margin-bottom: 20px
-  &:last-child
-    justify-content: flex-start
+  .list
+    list-style: none
+    font-size: 0
+    width: 100%
+    display: inline-flex
+    justify-content: space-between
+    margin-bottom: 20px
+    &:last-child
+      justify-content: flex-start
+      .item
+        margin-right: 20px
     .item
-      margin-right: 20px
-
-.item
-  display: inline-block
-  list-style: none
-  font-size: 0
-  border-radius: 5px
-
-.thumb
-  display: inline-block
-  border-radius: 5px
-
-.current
-  box-shadow(0 2px 5px 0 rgba(0,0,0,0.26))
+      display: inline-block
+      list-style: none
+      font-size: 0
+      border-radius: 5px
+      .thumb
+        display: inline-block
+        border-radius: 5px
+    .current
+      box-shadow(0 2px 5px 0 rgba(0,0,0,0.26))
