@@ -16,10 +16,10 @@ export default class extends React.Component {
       var page = thumbItem.page
         , size = thumbItem.size
         , useTag = "<use xlink:href=" + thumbItem.src + ">"
-        , cn = (+page == +currentPage) ? "item current" : "item"
+        , klass = (+page === +currentPage) ? "item current" : "item"
 
       return (
-        <li className={ cn }>
+        <li className={ klass }>
           <Link to="page" className="thumb" style= { size } params={{ page: page}} >
             <svg className="thumb" style={ size }
               dangerouslySetInnerHTML={{__html: useTag}}>
