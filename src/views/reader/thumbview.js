@@ -8,7 +8,7 @@ import Panel from './panel'
 export default class extends React.Component {
   render() {
     var book = app.getModel('book')
-      , thumbInfo = book.getThumbViewInfo(1200, 5)
+      , thumbInfo = book.getThumbViewInfo(960, 5)
       , thumbView = []
 
     function fillItem(thumbItem) {
