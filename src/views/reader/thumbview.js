@@ -10,7 +10,7 @@ export default class extends React.Component {
     var book = app.getModel('book')
       , thumbInfo = book.getThumbViewInfo(960, 5)
       , thumbView = []
-      , currentPage = this.props.params.cp
+      , currentPage = this.props.params.page
 
     function fillItem(thumbItem) {
       var page = thumbItem.page
