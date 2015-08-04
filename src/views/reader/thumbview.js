@@ -7,7 +7,7 @@ import Panel from './panel'
 
 export default class extends React.Component {
 
-  function generateThumbs() {
+  generateThumbs() {
     var book = app.getModel('book')
       , info = book.getTumbviewInfo()
       , totalPage = info.totalPage
@@ -25,7 +25,7 @@ export default class extends React.Component {
     return thumbnails
   }
 
-  function arrangeThumbs(viewWidth, minMargin) {
+  arrangeThumbs(viewWidth, minMargin) {
     var thumbnails = generateThumbs()
     thumbnails.map(function(){
 
