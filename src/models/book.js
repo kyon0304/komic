@@ -42,7 +42,7 @@ export default Model.extend({
       thumbnail = {
         src: originSrc + "#" + idx
       , page: idx + 1
-      , info: {
+      , size: {
           width: thumbWidth
           , height: thumbHeight
         }

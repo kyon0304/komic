@@ -13,13 +13,13 @@ export default class extends React.Component {
 
     function fillItem(thumbItem) {
       var page = thumbItem.page
-        , info = thumbItem.info
+        , size = thumbItem.size
         , useTag = "<use xlink:href=" + thumbItem.src + ">"
 
       return (
         <li className="item">
-          <Link to="page" className="thumb" style= { info } params={{ page: page}} >
-            <svg width={ info.width } height={ info.height }
+          <Link to="page" className="thumb" style= { size } params={{ page: page}} >
+            <svg width={ size.width } height={ size.height }
               dangerouslySetInnerHTML={{__html: useTag}}>
             </svg>
           </Link>
