@@ -27,7 +27,7 @@ export default Model.extend({
     return this.get('images')[page - 1]
   }
 
-, getThumbViewInfo(viewWidth, margin) {
+, getThumbViewInfo(viewWidth, minMargin) {
     var currentWidth = 0
       , thumbWidth
       , idx = 0
@@ -48,13 +48,13 @@ export default Model.extend({
         }
       }
 
-      if (currentWidth + margin + thumbWidth > viewWidth) {
+      if (currentWidth + minMargin + thumbWidth > viewWidth) {
         thumbnails.push(list)
         list = []
         currentWidth = 0
       }
       list.push(thumbnail)
-      currentWidth += (thumbWidth + margin)
+      currentWidth += (thumbWidth + minMargin)
 
       idx += 1
     }
