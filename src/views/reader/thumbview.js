@@ -8,7 +8,7 @@ import Panel from './panel'
 export default class extends React.Component {
   render() {
     var book = app.getModel('book')
-      , thumbInfo = book.getThumbViewInfo(1000, 5)
+      , thumbInfo = book.getThumbViewInfo(1200, 5)
       , thumbView = []
 
     function fillItem(thumbItem) {
@@ -19,7 +19,7 @@ export default class extends React.Component {
       return (
         <li className="item">
           <Link to="page" className="thumb" style= { size } params={{ page: page}} >
-            <svg width={ size.width } height={ size.height }
+            <svg className="thumb" style={ size }
               dangerouslySetInnerHTML={{__html: useTag}}>
             </svg>
           </Link>
