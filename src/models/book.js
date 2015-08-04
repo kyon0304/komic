@@ -33,18 +33,18 @@ export default Model.extend({
       , idx = 0
       , list = []
       , thumbHeight = this.get('thumbnails').height
-      , src = this.get('thumbnails').path
+      , originSrc = this.get('thumbnails').path
       , thumbnail
       , thumbnails = []
 
     for (let img of this.get('images')) {
       thumbWidth = Math.ceil(img.width / img.height * thumbHeight)
       thumbnail = {
-        page: idx + 1
+        src: originSrc + "#" + idx
+      , page: idx + 1
       , info: {
           width: thumbWidth
           , height: thumbHeight
-          , backgroundImage: "url(\"" + src + "#" + idx + "\")"
         }
       }
 
