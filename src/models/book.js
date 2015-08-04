@@ -27,7 +27,39 @@ export default Model.extend({
     return this.get('images')[page - 1]
   }
 
-, getContentInfo() {
-    //TODO return grouped contents
+, getThumbViewInfo(viewWidth, margin) {
+    var currentWidth = 0
+      , thumbWidth
+      , idx = 0
+      , list = []
+      , thumbHeight = this.get('thumbnails').height
+      , src = this.get('thumbnails').path
+      , thumbnail
+      , thumbnails = []
+
+    for (let img of this.get('images')) {
+      thumbWidth = Math.ceil(img.width / img.height * thumbHeight)
+      thumbnail = {
+        page: idx + 1
+      , info: {
+          width: thumbWidth
+          , height: thumbHeight
+          , backgroundImage: "url(\"" + src + "#" + idx + "\")"
+        }
+      }
+
+      if (currentWidth + margin + thumbWidth > viewWidth) {
+        thumbnails.push(list)
+        list = []
+        currentWidth = 0
+      }
+      list.push(thumbnail)
+      currentWidth += (thumbWidth + margin)
+
+      idx += 1
+    }
+
+    thumbnails.push(list)
+    return thumbnails
   }
 })
