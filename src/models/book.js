@@ -26,4 +26,22 @@ export default Model.extend({
 , getCurrentImage(page) {
     return this.get('images')[page - 1]
   }
+
+, getThumbnails() {
+    var imgs = this.get('images')
+      , rootSrc = this.get('thumbnails').path
+      , thumbHeight = this.get('thumbnails').height
+    return (
+      this.get('images').map(function (img, idx) {
+        return {
+          src: `${rootSrc}#${idx}`
+        , page: `${idx+1}`
+        , size: {
+            width: Math.ceil(img.width * thumbHeight / img.height)
+          , height: thumbHeight
+          }
+        }
+      })
+    )
+  }
 })
