@@ -27,19 +27,21 @@ export default Model.extend({
     return this.get('images')[page - 1]
   }
 
-, getThumbviewInfo() {
-    return {
-      src: this.get('thumbnails').path
-    , totalPage: this.get('images').length
-    }
+, getThumbnails() {
+    var imgs = this.get('images')
+      , rootSrc = this.get('thumbnails').path
+      , thumbHeight = this.get('thumbnails').height
+    return (
+      this.get('images').map(function (img, idx) {
+        return {
+          src: `${rootSrc}#${idx}`
+        , page: `${idx+1}`
+        , size: {
+            width: Math.ceil(img.width * thumbHeight / img.height)
+          , height: thumbHeight
+          }
+        }
+      })
+    )
   }
-
-, getThumbnailSize(page) {
-  var img = this.get('images')[page-1]
-    , thumbHeight = this.get('thumbnails').height
-  return {
-    width: Math.ceil(img.width * thumbHeight / img.height)
-  , height: thumbHeight
-  }
-}
 })
