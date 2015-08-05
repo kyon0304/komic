@@ -42,40 +42,4 @@ export default Model.extend({
   , height: thumbHeight
   }
 }
-
-, getThumbViewInfo(viewWidth, minMargin) {
-    var currentWidth = 0
-      , thumbWidth
-      , idx = 0
-      , list = []
-      , thumbHeight = this.get('thumbnails').height
-      , originSrc = this.get('thumbnails').path
-      , thumbnail
-      , thumbnails = []
-
-    for (let img of this.get('images')) {
-      thumbWidth = Math.ceil(img.width / img.height * thumbHeight)
-      thumbnail = {
-        src: originSrc + "#" + idx
-      , page: idx + 1
-      , size: {
-          width: thumbWidth
-          , height: thumbHeight
-        }
-      }
-
-      if (currentWidth + minMargin + thumbWidth > viewWidth) {
-        thumbnails.push(list)
-        list = []
-        currentWidth = 0
-      }
-      list.push(thumbnail)
-      currentWidth += (thumbWidth + minMargin)
-
-      idx += 1
-    }
-
-    thumbnails.push(list)
-    return thumbnails
-  }
 })
