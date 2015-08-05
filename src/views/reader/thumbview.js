@@ -25,45 +25,53 @@ export default class extends React.Component {
     return thumbnails
   }
 
-  arrangeThumbs(viewWidth, minMargin) {
+  arrangeThumbnails(viewWidth, minMargin) {
     var thumbnails = generateThumbs()
-    thumbnails.map(function(){
+      , currentWidth = 0
+      , width
+    return (
+      thumbnails.map(function (thumb){
+        width = thumb.size.width + minMargin
+        if (currentWidth + width > viewWidth) {
+          currentWidth = 0
+          return []
+        }
+        currentWidth += width
+        return thumb
+      })
+    )
+  }
 
-    })
+  fillThumbview(thumb) {
+    if(thumb === []) {
+      return (
+        </ul>
+        <ul className="list">
+      )
+    }
+    var page = thumb.page
+      , size = thumb.size
+      , useTag = "<use xlink:href=" + thumb.src +">"
+      , currentPage = this.props.params.page
+      , klass = (+page === +currentPage) ? "item current" : "item"
+    return (
+      <li className={ klass }>
+        <Link to="page" className="thumb" style= { size } params={{ page: page}} >
+          <svg className="thumb" style={ size }
+            dangerouslySetInnerHTML={{__html: useTag}}>
+          </svg>
+        </Link>
+      </li>
+    )
   }
 
   render() {
-    var book = app.getModel('book')
-      , thumbInfo = book.getThumbViewInfo(960, 5)
+    var thumbInfo = this.arrangeThumbnails(960, 5)
       , thumbView = []
-      , currentPage = this.props.params.page
 
-    function fillItem(thumbItem) {
-      var page = thumbItem.page
-        , size = thumbItem.size
-        , useTag = "<use xlink:href=" + thumbItem.src + ">"
-        , klass = (+page === +currentPage) ? "item current" : "item"
-
-      return (
-        <li className={ klass }>
-          <Link to="page" className="thumb" style= { size } params={{ page: page}} >
-            <svg className="thumb" style={ size }
-              dangerouslySetInnerHTML={{__html: useTag}}>
-            </svg>
-          </Link>
-        </li>
-      )
-    }
-
-    thumbView.push(
-      thumbInfo.map(function(thumbList) {
-        return (
-          <ul className="list">
-            { thumbList.map(fillItem) }
-          </ul>
-        )
-      })
-    )
+    thumbview.push(<ul className="list">)
+    thumbview.push(thumbInfo.map(fillThumbview))
+    thumbview.push(</ul>)
 
     return (
       <div>
