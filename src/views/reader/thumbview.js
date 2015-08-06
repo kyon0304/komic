@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
+import $ from 'jquery'
 
 import app from 'app'
 import routes from 'routes'
@@ -11,36 +12,32 @@ export default class extends React.Component {
     app.trigger('toggle:thumbview', false)
   }
 
-  scrollDistance (el) {
-    var rect = el.getBoundingClientRect()
-      , rectCenter = (rect.top + rect.bottom) / 2
-      , vertCenter = (window.innerHeight || document.documentElement.clientHeight) / 2
+  scrollToCurrentThumb(el) {
+    var current = $(React.findDOMNode(this.refs.current))
+      , el = React.findDOMNode(this)
+      , DISTANCE_TO_TOP = 60
 
-    return (rectCenter - vertCenter)
+    $(el).scrollTop(current.offset().top - DISTANCE_TO_TOP)
   }
 
   componentDidMount() {
-    var current = document.getElementsByClassName('current')[0]
-      , distance = this.scrollDistance(current)
-
-    // delay to revert default update scroll
-    setTimeout(function () {
-       window.scrollBy(0, distance)
-    }, 0)
+    this.scrollToCurrentThumb()
   }
 
-  renderItem(thumb) {
+  renderItem(thumb, index) {
     var canvas = app.getModel('canvas')
       , currentPage = canvas.get('currentPage')
       , page = thumb.page
       , size = thumb.size
       , useTag = `<use xlink:href=${thumb.src}>`
-      , klass = (+page === +currentPage) ? "item current" : "item"
+      , isCurrent = +page === +currentPage
+      , klass = isCurrent ? "item current" : "item"
 
     return (
-      <li className={ klass }>
+      <li className={ klass } key={ index }>
         <Link to="page" params={{ page: page }}
           onClick={ this.closeThumbview }
+          ref={ isCurrent ? 'current' : null }
           className="thumb" { ...size }>
           <svg className="thumb" { ...size }
             dangerouslySetInnerHTML={{__html: useTag}}>
@@ -55,15 +52,11 @@ export default class extends React.Component {
       , thumbnails = book.getThumbnails()
       , thumbview = []
 
-    thumbview.push(
-      <ul className="list">
-        { thumbnails.map(this.renderItem.bind(this)) }
-      </ul>
-    )
-
     return (
       <div className="thumbview">
-        { thumbview }
+        <ul className="list">
+          { thumbnails.map(this.renderItem.bind(this)) }
+        </ul>
       </div>
     )
   }
