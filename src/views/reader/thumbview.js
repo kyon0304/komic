@@ -44,7 +44,7 @@ export default class extends React.Component {
     )
 
     return (
-      <div className="backdrop">
+      <div className="thumbview">
         { thumbview }
       </div>
     )
