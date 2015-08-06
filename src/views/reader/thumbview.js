@@ -50,7 +50,6 @@ export default class extends React.Component {
   render() {
     var book = app.getModel('book')
       , thumbnails = book.getThumbnails()
-      , thumbview = []
 
     return (
       <div className="thumbview">
