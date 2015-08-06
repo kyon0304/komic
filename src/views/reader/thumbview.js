@@ -12,7 +12,7 @@ export default class extends React.Component {
     app.trigger('toggle:thumbview', false)
   }
 
-  scrollToCurrentThumb(el) {
+  scrollToCurrentThumb() {
     var current = $(React.findDOMNode(this.refs.current))
       , el = React.findDOMNode(this)
       , DISTANCE_TO_TOP = 60
