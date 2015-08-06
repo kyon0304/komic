@@ -11,6 +11,24 @@ export default class extends React.Component {
     app.trigger('toggle:thumbview', false)
   }
 
+  scrollDistance (el) {
+    var rect = el.getBoundingClientRect()
+      , rectCenter = (rect.top + rect.bottom) / 2
+      , vertCenter = (window.innerHeight || document.documentElement.clientHeight) / 2
+
+    return (rectCenter - vertCenter)
+  }
+
+  componentDidMount() {
+    var current = document.getElementsByClassName('current')[0]
+      , distance = this.scrollDistance(current)
+
+    // delay to revert default update scroll
+    setTimeout(function () {
+       window.scrollBy(0, distance)
+    }, 0)
+  }
+
   renderItem(thumb) {
     var canvas = app.getModel('canvas')
       , currentPage = canvas.get('currentPage')
