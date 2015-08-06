@@ -7,31 +7,39 @@ import Panel from './panel'
 
 export default class extends React.Component {
 
+  closeThumbview() {
+    app.trigger('toggle:thumbview', false)
+  }
+
+  renderItem(thumb) {
+    var canvas = app.getModel('canvas')
+      , currentPage = canvas.get('currentPage')
+      , page = thumb.page
+      , size = thumb.size
+      , useTag = `<use xlink:href=${thumb.src}>`
+      , klass = (+page === +currentPage) ? "item current" : "item"
+
+    return (
+      <li className={ klass }>
+        <Link to="page" params={{ page: page }}
+          onClick={ this.closeThumbview }
+          className="thumb" { ...size }>
+          <svg className="thumb" { ...size }
+            dangerouslySetInnerHTML={{__html: useTag}}>
+          </svg>
+        </Link>
+      </li>
+    )
+  }
+
   render() {
     var book = app.getModel('book')
       , thumbnails = book.getThumbnails()
       , thumbview = []
-      , currentPage = this.props.params.page
-
-    function fillItem(thumb) {
-      var page = thumb.page
-        , size = thumb.size
-        , useTag = `<use xlink:href=${thumb.src}>`
-        , klass = (+page === +currentPage) ? "item current" : "item"
-      return (
-        <li className={ klass }>
-          <Link to="page" params={{ page: page}} className="thumb" { ...size }>
-            <svg className="thumb" { ...size }
-              dangerouslySetInnerHTML={{__html: useTag}}>
-            </svg>
-          </Link>
-        </li>
-      )
-    }
 
     thumbview.push(
       <ul className="list">
-        { thumbnails.map(fillItem) }
+        { thumbnails.map(this.renderItem.bind(this)) }
       </ul>
     )
 
