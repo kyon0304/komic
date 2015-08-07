@@ -38,4 +38,10 @@ export default class extends Model {
     this.setCurrentPage(currentPage + 1)
   }
 
+  getNextPage() {
+    var nextPage = this.get('currentPage') + 1
+      , totalPage = this.get('totalPage')
+    return nextPage > totalPage ? -1 : nextPage
+  }
+
 }
