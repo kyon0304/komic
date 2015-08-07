@@ -1,6 +1,5 @@
 import React from 'react'
 import { Navigation } from 'react-router'
-import _ from 'mod/utils'
 
 import app from 'app'
 import routes from 'routes'

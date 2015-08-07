@@ -8,7 +8,6 @@ export default class extends Model {
       this.set('currentPage', 1)
     }
     this.on('turn:nextPage', this.turnNextPage)
-    this.on('preload', this.preload)
   }
 
   defaults() {
