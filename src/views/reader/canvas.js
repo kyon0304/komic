@@ -6,64 +6,58 @@ import app from 'app'
 import routes from 'routes'
 
 export default class extends React.Component {
+  constructor(options) {
+    super(options)
+    this.xhr = new XMLHttpRequest()
+    this.canvas = app.getModel('canvas')
+    this.book = app.getModel('book')
+  }
 
   componentWillMount() {
-    var canvas = app.getModel('canvas')
-    canvas.on('turn:nextPage', this.transitionToPage)
+    this.canvas.on('turn:nextPage', this.transitionToPage.bind(this))
     localStorage.clear()
   }
 
   componentWillUnmount() {
-    var canvas = app.getModel('canvas')
-    canvas.off('turn:nextPage', this.transitionToPage)
+    this.canvas.off('turn:nextPage', this.transitionToPage.bind(this))
     localStorage.clear()
   }
 
   handleClick() {
-    var canvas = app.getModel('canvas')
-    canvas.trigger('turn:nextPage')
+    this.canvas.trigger('turn:nextPage')
+    if(this.xhr.readyState !== 4){
+      this.xhr.abort()
+    }
   }
 
   transitionToPage() {
     var router = app.get('router')
-      , canvas = app.getModel('canvas')
-    router.transitionTo('page', { page: canvas.get('currentPage') })
-  }
-
-  getNextPage() {
-    var canvas = app.getModel('canvas')
-      , nextPage = canvas.get('currentPage') + 1
-      , totalPage = canvas.get('totalPage')
-    return nextPage > totalPage ? -1 : nextPage
+    router.transitionTo('page', { page: this.canvas.get('currentPage') })
   }
 
   preload() {
-    var nextPage = getNextPage()
+    var nextPage = this.canvas.getNextPage()
     if(nextPage === -1)
       return
 
-    var book = app.getModel('book')
-      , xhr = new XMLHttpRequest()
-      , imgSrc
+    var imgSrc = this.book.getCurrentImage(nextPage).src
 
-    imgSrc = book.getCurrentImage(nextPage).src
-    xhr.open('GET', imgSrc, true)
-    xhr.responseType = 'blob'
-    xhr.onload = function(e) {
+    this.xhr.open('GET', imgSrc, true)
+    this.xhr.responseType = 'blob'
+    this.xhr.onload = function(e) {
       if (this.status === 200) {
         localStorage.setItem('preload', window.URL.createObjectURL(this.response))
       }
     }
-    xhr.onerror = function(e) {
+    this.xhr.onerror = function(e) {
       console.log(`Error ${e.target.status} occured while receiving.`)
     }
-    xhr.send()
+    this.xhr.send()
   }
 
   render() {
-    var book = app.getModel('book')
-      , currentPage = app.getModel('canvas').get('currentPage')
-      , img = book.getCurrentImage(currentPage)
+    var currentPage = this.canvas.get('currentPage')
+      , img = this.book.getCurrentImage(currentPage)
 
     if(localStorage.getItem('preload')) {
       img.src = localStorage.getItem('preload')
@@ -73,8 +67,8 @@ export default class extends React.Component {
     return (
       <div className="canvas">
         <img { ...img }
-          onLoad={ this.preload }
-          onClick={ this.handleClick } />
+          onLoad={ this.preload.bind(this) }
+          onClick={ this.handleClick.bind(this) } />
       </div>
     )
   }
