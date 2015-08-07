@@ -30,19 +30,23 @@ export default class extends React.Component {
     router.transitionTo('page', { page: canvas.get('currentPage') })
   }
 
+  getNextPage() {
+    var canvas = app.getModel('canvas')
+      , nextPage = canvas.get('currentPage') + 1
+      , totalPage = canvas.get('totalPage')
+    return nextPage > totalPage ? -1 : nextPage
+  }
+
   preload() {
-    var book = app.getModel('book')
-      , canvas = app.getModel('canvas')
-      , currentPage = app.getModel('canvas').get('currentPage')
-      , nextImg = book.getCurrentImage(currentPage + 1)
-      , imgSrc = ''
-
-    if(nextImg !== void 0)
-      imgSrc = nextImg.src
-
-    if(imgSrc === '')
+    var nextPage = getNextPage()
+    if(nextPage === -1)
       return
-    var xhr = new XMLHttpRequest()
+
+    var book = app.getModel('book')
+      , xhr = new XMLHttpRequest()
+      , imgSrc
+
+    imgSrc = book.getCurrentImage(nextPage).src
     xhr.open('GET', imgSrc, true)
     xhr.responseType = 'blob'
     xhr.onload = function(e) {
@@ -58,7 +62,6 @@ export default class extends React.Component {
 
   render() {
     var book = app.getModel('book')
-      , canvas = app.getModel('canvas')
       , currentPage = app.getModel('canvas').get('currentPage')
       , img = book.getCurrentImage(currentPage)
 
