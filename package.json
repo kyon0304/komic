@@ -6,6 +6,9 @@
   "scripts": {
     "postinstall": "$(npm bin)/bower install"
   },
+  "bin": {
+    "komic-web-dev": "./bin/komic-web-dev"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
