@@ -80,7 +80,7 @@ export default class {
     ;[this.x, this.y] = this.limitToboundary(x, y)
 
     style[TRANSFORM_PROP] =
-      `translate(${this.x}px, ${this.y}px) scale(${scale}, ${scale})`
+      `translate3d(${this.x}px, ${this.y}px, 0) scale(${scale}, ${scale})`
     style[TRANSFORM_ORIGIN_PROP] = '0px 0px'
 
     return this
