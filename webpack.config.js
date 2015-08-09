@@ -35,7 +35,7 @@ module.exports = {
     ]
   }
 , babel: {
-   optional: ["runtime"]
+   optional: ["runtime", "es7.functionBind"]
   }
 , stylus: {
     use: [ (require('nib'))() ]

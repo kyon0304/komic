@@ -22,13 +22,13 @@ export default class extends React.Component {
   componentWillMount() {
     var canvas = app.getModel('canvas')
     canvas.on('turn:nextPage', this.transitionToPage)
-    win.on('resize', this.handleResize.bind(this))
+    win.on('resize', ::this.handleResize)
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
     canvas.off('turn:nextPage', this.transitionToPage)
-    win.off('resize', this.handleResize.bind(this))
+    win.off('resize', ::this.handleResize)
   }
 
   handleClick() {
@@ -58,9 +58,9 @@ export default class extends React.Component {
       , currentPage = app.getModel('canvas').get('currentPage')
 
     return (
-      <div className="canvas" onWheel={ this.scrollHandler.bind(this) }>
+      <div className="canvas" onWheel={ ::this.scrollHandler }>
         <img { ...book.getCurrentImage(currentPage) } ref="image"
-          onClick={this.handleClick}
+          onClick={ ::this.handleClick }
           />
       </div>
     )
