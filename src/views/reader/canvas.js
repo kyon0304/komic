@@ -1,10 +1,17 @@
 import React from 'react'
 import { Navigation } from 'react-router'
+import $ from 'jquery'
 
 import app from 'app'
 import routes from 'routes'
+import ImageManager  from './image_manager'
 
 export default class extends React.Component {
+
+  constructor(options) {
+    super(options)
+    this.imageManger = new ImageManager()
+  }
 
   componentWillMount() {
     var canvas = app.getModel('canvas')
@@ -27,15 +34,26 @@ export default class extends React.Component {
     router.transitionTo('page', { page: canvas.get('currentPage') })
   }
 
+  componentDidMount() {
+    this.imageManger
+      .setImage(React.findDOMNode(this.refs.image))
+      .moveToCanvasCenter()
+  }
+
+  scrollHandler(e) {
+    this.imageManger[e.altKey ? 'onScaleScroll' : 'onMoveScroll'](e)
+  }
+
   render() {
 
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
 
     return (
-      <div className="canvas">
-        <img { ...book.getCurrentImage(currentPage) }
-          onClick={ this.handleClick } />
+      <div className="canvas" onWheel={ this.scrollHandler.bind(this) }>
+        <img { ...book.getCurrentImage(currentPage) } ref="image"
+          onClick={this.handleClick}
+          />
       </div>
     )
   }
