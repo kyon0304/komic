@@ -2,18 +2,22 @@ import $ from 'jquery'
 import _ from 'mod/utils'
 import browser from 'mod/browser'
 
+const win = $(window)
 const TRANSFORM_PROP = browser.getVendorPropertyName('transform')
 const TRANSFORM_ORIGIN_PROP = browser.getVendorPropertyName('transformOrigin')
 
 export default class {
   constructor(options) {
-    var win = $(window)
+    this.setViewInfo()
+    this.x = this.y = 0
+    this.scale = 1
+  }
+
+  setViewInfo() {
     this.viewInfo = {
       viewWidth: win.width()
     , viewHeight: win.height()
     }
-    this.x = this.y = 0
-    this.scale = 1
   }
 
   setImage(image) {
@@ -85,6 +89,12 @@ export default class {
   onMoveScroll(e) {
     e.preventDefault()
     this.transform(this.x - e.deltaX, this.y - e.deltaY)
+  }
+
+  onResize() {
+    this.setViewInfo()
+    this.setBoundaryInfo()
+    this.transform(this.x, this.y)
   }
 
   onScaleScroll(e) {

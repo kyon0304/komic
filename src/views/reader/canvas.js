@@ -6,6 +6,8 @@ import app from 'app'
 import routes from 'routes'
 import ImageManager  from './image_manager'
 
+const win = $(window)
+
 export default class extends React.Component {
 
   constructor(options) {
@@ -13,14 +15,20 @@ export default class extends React.Component {
     this.imageManger = new ImageManager()
   }
 
+  handleResize() {
+    this.imageManger.onResize()
+  }
+
   componentWillMount() {
     var canvas = app.getModel('canvas')
     canvas.on('turn:nextPage', this.transitionToPage)
+    win.on('resize', this.handleResize.bind(this))
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
     canvas.off('turn:nextPage', this.transitionToPage)
+    win.off('resize', this.handleResize.bind(this))
   }
 
   handleClick() {
