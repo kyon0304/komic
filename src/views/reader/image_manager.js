@@ -1,5 +1,9 @@
 import $ from 'jquery'
 import _ from 'mod/utils'
+import browser from 'mod/browser'
+
+const TRANSFORM_PROP = browser.getVendorPropertyName('transform')
+const TRANSFORM_ORIGIN_PROP = browser.getVendorPropertyName('transformOrigin')
 
 export default class {
   constructor(options) {
@@ -66,12 +70,14 @@ export default class {
   }
 
   transform(x, y, scale = this.scale) {
-    var el = this.getImage()
+    var node = this.getImage()[0]
+      , style = node.style
+
     ;[this.x, this.y] = this.limitToboundary(x, y)
 
-    el[0].style.webkitTransform =
+    style[TRANSFORM_PROP] =
       `translate(${this.x}px, ${this.y}px) scale(${scale}, ${scale})`
-    el[0].style.webkitTransformOrigin = '0px 0px'
+    style[TRANSFORM_ORIGIN_PROP] = '0px 0px'
 
     return this
   }
