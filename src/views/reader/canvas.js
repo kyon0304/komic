@@ -4,6 +4,8 @@ import $ from 'jquery'
 
 import app from 'app'
 import routes from 'routes'
+
+import _ from 'mod/utils'
 import ImageManager  from './image_manager'
 
 const win = $(window)
@@ -13,22 +15,20 @@ export default class extends React.Component {
   constructor(options) {
     super(options)
     this.imageManger = new ImageManager()
-  }
-
-  handleResize() {
-    this.imageManger.onResize()
+    this.guid = _.uniqueId()
   }
 
   componentWillMount() {
     var canvas = app.getModel('canvas')
     canvas.on('turn:nextPage', this.transitionToPage)
-    win.on('resize', ::this.handleResize)
+    win.on(`resize.${this.guid}`
+      , _.debounce(::this.imageManger.onResize, 300))
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
     canvas.off('turn:nextPage', this.transitionToPage)
-    win.off('resize', ::this.handleResize)
+    win.off(`.${this.guid}`)
   }
 
   handleClick() {
