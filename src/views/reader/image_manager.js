@@ -109,6 +109,22 @@ export default class {
     this.transform(this.x, this.y, this.scale)
   }
 
+  moveToCanvasTopCenter() {
+    var { viewWidth } = this.viewInfo
+      , { width } = this
+      , moveToX = (viewWidth - width) / 2
+      , moveToY = Math.max(...this.boundaryInfo.yRange)
+
+    this.transform(moveToX, moveToY)
+
+    return this
+  }
+
+  setMaxWidth(maxWidth) {
+    this.setScale( maxWidth / this.naturalWidth )
+    return this
+  }
+
   moveToCanvasCenter() {
     var { viewWidth, viewHeight } = this.viewInfo
       , { width, height } = this
