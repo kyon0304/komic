@@ -73,6 +73,10 @@ export default class {
     return [_.clamp(x, xRange), _.clamp(y, yRange)]
   }
 
+  move(deltaX, deltaY) {
+    this.transform(this.x + deltaX, this.y + deltaY)
+  }
+
   transform(x, y, scale = this.scale) {
     var node = this.getImage()[0]
       , style = node.style
