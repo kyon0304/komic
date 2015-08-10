@@ -54,7 +54,7 @@ export default class extends React.Component {
     return (
       <div className="thumbview">
         <ul className="list">
-          { thumbnails.map(this.renderItem.bind(this)) }
+          { thumbnails.map(::this.renderItem) }
         </ul>
       </div>
     )

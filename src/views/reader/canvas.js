@@ -1,19 +1,34 @@
 import React from 'react'
 import { Navigation } from 'react-router'
+import $ from 'jquery'
 
 import app from 'app'
 import routes from 'routes'
 
+import _ from 'mod/utils'
+import ImageManager  from './image_manager'
+
+const win = $(window)
+
 export default class extends React.Component {
+
+  constructor(options) {
+    super(options)
+    this.imageManger = new ImageManager()
+    this.guid = _.uniqueId()
+  }
 
   componentWillMount() {
     var canvas = app.getModel('canvas')
     canvas.on('turn:nextPage', this.transitionToPage)
+    win.on(`resize.${this.guid}`
+      , _.debounce(::this.imageManger.onResize, 300))
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
     canvas.off('turn:nextPage', this.transitionToPage)
+    win.off(`.${this.guid}`)
   }
 
   handleClick() {
@@ -27,15 +42,26 @@ export default class extends React.Component {
     router.transitionTo('page', { page: canvas.get('currentPage') })
   }
 
+  componentDidMount() {
+    this.imageManger
+      .setImage(React.findDOMNode(this.refs.image))
+      .moveToCanvasCenter()
+  }
+
+  scrollHandler(e) {
+    this.imageManger[e.altKey ? 'onScaleScroll' : 'onMoveScroll'](e)
+  }
+
   render() {
 
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
 
     return (
-      <div className="canvas">
-        <img { ...book.getCurrentImage(currentPage) }
-          onClick={ this.handleClick } />
+      <div className="canvas" onWheel={ ::this.scrollHandler }>
+        <img { ...book.getCurrentImage(currentPage) } ref="image"
+          onClick={ ::this.handleClick }
+          />
       </div>
     )
   }
