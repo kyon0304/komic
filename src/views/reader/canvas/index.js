@@ -6,12 +6,9 @@ import Backbone from 'backbone'
 import app from 'app'
 import routes from 'routes'
 
-import _ from 'mod/utils'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 import ImageManager from './image_manager'
 import CanvasImage from './image'
-
-const win = $(window)
 
 var ImageLoader = (() => {
   return new class {
@@ -48,7 +45,6 @@ export default class extends React.Component {
   constructor(options) {
     super(options)
     this.imageManger = new ImageManager()
-    this.guid = _.uniqueId()
     this.state = { loading: true }
     this.model = new Model()
   }
@@ -62,14 +58,11 @@ export default class extends React.Component {
   componentWillMount() {
     var canvas = app.getModel('canvas')
     canvas.on('turn:nextPage', ::this.transitionToPage)
-    win.on(`resize.${this.guid}`
-      , ::this.imageManger.onResize)
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
     canvas.off('turn:nextPage', ::this.transitionToPage)
-    win.off(`.${this.guid}`)
   }
 
   transitionToPage() {
