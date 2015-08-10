@@ -14,4 +14,21 @@ _.mixin({
   }
 })
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+;['debounce'].forEach(function(methodName) {
+  var willBeMixin = {}
+
+  willBeMixin[capitalizeFirstLetter(methodName)] = function(...args) {
+    return function decorator(target, key, descriptor) {
+      descriptor.value = _[methodName](descriptor.value, ...args)
+      return descriptor
+    }
+  }
+
+ _.mixin(willBeMixin)
+})
+
 export default _

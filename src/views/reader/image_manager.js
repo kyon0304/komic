@@ -91,6 +91,7 @@ export default class {
     this.transform(this.x - e.deltaX, this.y - e.deltaY)
   }
 
+  @_.Debounce(300)
   onResize() {
     this.setViewInfo()
     this.setBoundaryInfo()

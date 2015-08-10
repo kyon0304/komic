@@ -22,7 +22,7 @@ export default class extends React.Component {
     var canvas = app.getModel('canvas')
     canvas.on('turn:nextPage', this.transitionToPage)
     win.on(`resize.${this.guid}`
-      , _.debounce(::this.imageManger.onResize, 300))
+      , ::this.imageManger.onResize)
   }
 
   componentWillUnmount() {
