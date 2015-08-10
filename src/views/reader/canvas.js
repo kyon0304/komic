@@ -1,5 +1,6 @@
 import React from 'react'
 import { Navigation } from 'react-router'
+import Preloader from 'manager/preloader'
 
 import app from 'app'
 import routes from 'routes'
@@ -7,7 +8,6 @@ import routes from 'routes'
 export default class extends React.Component {
   constructor(options) {
     super(options)
-    this.xhr = new XMLHttpRequest()
     this.canvas = app.getModel('canvas')
     this.book = app.getModel('book')
   }
@@ -24,9 +24,7 @@ export default class extends React.Component {
 
   handleClick() {
     this.canvas.trigger('turn:nextPage')
-    if(this.xhr.readyState !== 4){
-      this.xhr.abort()
-    }
+    Preloader.stopLoading()
   }
 
   transitionToPage() {
@@ -34,6 +32,7 @@ export default class extends React.Component {
     router.transitionTo('page', { page: this.canvas.get('currentPage') })
   }
 
+  /*
   preload() {
     var nextPage = this.canvas.getNextPage()
     if(nextPage === -1)
@@ -53,6 +52,7 @@ export default class extends React.Component {
     }
     this.xhr.send()
   }
+  */
 
   render() {
     var currentPage = this.canvas.get('currentPage')
@@ -66,8 +66,8 @@ export default class extends React.Component {
     return (
       <div className="canvas">
         <img { ...img }
-          onLoad={ this.preload.bind(this) }
-          onClick={ this.handleClick.bind(this) } />
+          onLoad={ Preloader.loadImage() }
+          onClick={ this.handleClick } />
       </div>
     )
   }
