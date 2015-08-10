@@ -25,7 +25,7 @@ var ImageLoader = (() => {
         var image = new Image()
         image.src = src
         image.onload = resolve
-        image.error = reject
+        image.onerror = reject
       })
     }
   }
