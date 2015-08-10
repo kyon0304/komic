@@ -7,58 +7,11 @@ import app from 'app'
 import routes from 'routes'
 
 import _ from 'mod/utils'
-import ImageManager from './image_manager'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
+import ImageManager from './image_manager'
+import CanvasImage from './image'
 
 const win = $(window)
-
-class CanvasImage extends React.Component {
-  constructor(options) {
-    super(options)
-    this.guid = _.uniqueId()
-    this.imageManger = this.props.manager
-  }
-
-  componentWillMount() {
-    win.on(`resize.${this.guid}`
-      , ::this.imageManger.onResize)
-  }
-
-  componentWillUnmount() {
-    win.off(`.${this.guid}`)
-  }
-
-  rendered() {
-    this.imageManger
-      .setImage(React.findDOMNode(this))
-      .setMaxWidth(win.width() - 20)
-      .moveToCanvasTopCenter()
-  }
-
-  componentDidMount() {
-    this.rendered()
-  }
-
-  componentDidUpdate() {
-    this.rendered()
-  }
-
-  handleClick() {
-    var canvas = app.getModel('canvas')
-    canvas.trigger('turn:nextPage')
-  }
-
-  render() {
-    var book = app.getModel('book')
-      , currentPage = app.getModel('canvas').get('currentPage')
-
-    return (
-      <img { ...book.getCurrentImage(currentPage) } ref="image"
-        onClick={ ::this.handleClick }
-        />
-    )
-  }
-}
 
 var ImageLoader = (() => {
   return new class {
