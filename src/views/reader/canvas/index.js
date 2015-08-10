@@ -7,7 +7,7 @@ import app from 'app'
 import routes from 'routes'
 
 import _ from 'mod/utils'
-import ImageManager  from './image_manager'
+import ImageManager from './image_manager'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 
 const win = $(window)
