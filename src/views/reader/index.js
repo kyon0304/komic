@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import _ from 'mod/utils'
 
 import Panel from './panel'
-import Canvas from './canvas'
+import Canvas from './canvas/index'
 import Thumbview from './thumbview'
 import app from 'app'
 
