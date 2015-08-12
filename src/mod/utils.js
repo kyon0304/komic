@@ -19,16 +19,16 @@ function capitalizeFirstLetter(string) {
 }
 
 ;['debounce'].forEach(function(methodName) {
-  var willBeMixin = {}
-
-  willBeMixin[capitalizeFirstLetter(methodName)] = function(...args) {
-    return function decorator(target, key, descriptor) {
-      descriptor.value = _[methodName](descriptor.value, ...args)
-      return descriptor
+  _.mixin({
+    [capitalizeFirstLetter(methodName)]: (...args) => {
+      return function decorator(target, key, descriptor) {
+        return {
+          ...descriptor
+        , value: _[methodName](descriptor.value, ...args)
+        }
+      }
     }
-  }
-
- _.mixin(willBeMixin)
+  })
 })
 
 export default _
