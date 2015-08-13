@@ -14,4 +14,21 @@ _.mixin({
   }
 })
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+;['debounce'].forEach(function(methodName) {
+  _.mixin({
+    [capitalizeFirstLetter(methodName)]: (...args) => {
+      return function decorator(target, key, descriptor) {
+        return {
+          ...descriptor
+        , value: _[methodName](descriptor.value, ...args)
+        }
+      }
+    }
+  })
+})
+
 export default _

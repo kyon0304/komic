@@ -73,6 +73,10 @@ export default class {
     return [_.clamp(x, xRange), _.clamp(y, yRange)]
   }
 
+  move(deltaX, deltaY) {
+    this.transform(this.x + deltaX, this.y + deltaY)
+  }
+
   transform(x, y, scale = this.scale) {
     var node = this.getImage()[0]
       , style = node.style
@@ -91,6 +95,7 @@ export default class {
     this.transform(this.x - e.deltaX, this.y - e.deltaY)
   }
 
+  @_.Debounce(300)
   onResize() {
     this.setViewInfo()
     this.setBoundaryInfo()
@@ -106,6 +111,22 @@ export default class {
     this.x = this.x + halfDeltaWidth
     this.y = this.y + halfDeltaHeight
     this.transform(this.x, this.y, this.scale)
+  }
+
+  moveToCanvasTopCenter() {
+    var { viewWidth } = this.viewInfo
+      , { width } = this
+      , moveToX = (viewWidth - width) / 2
+      , moveToY = Math.max(...this.boundaryInfo.yRange)
+
+    this.transform(moveToX, moveToY)
+
+    return this
+  }
+
+  setMaxWidth(maxWidth) {
+    this.setScale( maxWidth / this.naturalWidth )
+    return this
   }
 
   moveToCanvasCenter() {
