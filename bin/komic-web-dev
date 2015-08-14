@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+var path = require("path")
+  , spawn = require('child_process').spawn
+  , fs = require('fs')
+
+var args = process.argv.slice(2)
+  , gruntfile = path.join(__dirname, '../Gruntfile.js')
+  , contentBase = path.join(process.cwd(), args[0])
+
+if (!fs.lstatSync(contentBase).isDirectory()) {
+  throw new Error(contentBase + ' isn\'t directiory')
+  return
+}
+
+var child = spawn('grunt', [
+    's'
+  , '--gruntfile', gruntfile
+  , '--content-base', contentBase
+  ])
+
+;['stdout', 'stdin', 'stderr'].forEach(function(methodName) {
+  child[methodName].on('data', function(data) {
+    process[methodName].write(data)
+  })
+})

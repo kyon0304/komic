@@ -8,7 +8,7 @@ var wrapperStyle = { display: 'table' }
 export default class extends React.Component {
   render() {
     return (
-      <div style={ wrapperStyle }>
+      <div style={ Object.assign(wrapperStyle, this.props.style) }>
         <div style={ cellStyle }>
           { this.props.children }
         </div>

@@ -23,6 +23,11 @@ export default Model.extend({
     }, this.getBookCoverSize())
   }
 
+, getCurrentImageUri(page) {
+    var { src } = this.getCurrentImage(page)
+    return src
+  }
+
 , getCurrentImage(page) {
     return this.get('images')[page - 1]
   }
