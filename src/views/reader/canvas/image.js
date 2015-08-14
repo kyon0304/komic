@@ -80,10 +80,11 @@ export default class extends React.Component {
   render() {
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
-      , img = this.book.getCurrentImage(currentPage)
+      , img = book.getCurrentImage(currentPage)
       , cached = this.preloader.pickImage(currentPage)
 
     if (cached) {
+      console.log('display cached.')
       img.src = window.URL.createObjectURL(cached)
     }
 

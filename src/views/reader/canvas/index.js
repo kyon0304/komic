@@ -9,7 +9,9 @@ import routes from 'routes'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 import ImageManager from './image_manager'
 import CanvasImage from './image'
+import Preloader from 'manager/preloader'
 
+/*
 var ImageLoader = (() => {
   return new class {
     constructor() {
@@ -30,6 +32,7 @@ var ImageLoader = (() => {
     }
   }
 })()
+*/
 
 var Model = Backbone.Model.extend({
   getCurrentImageUri: () => {
@@ -37,6 +40,14 @@ var Model = Backbone.Model.extend({
       , currentPage = app.getModel('canvas').get('currentPage')
 
     return book.getCurrentImageUri(currentPage)
+  }
+
+, getCurrentPage: () => {
+    return app.getModel('canvas').get('currentPage')
+  }
+
+, getTotalPage: () => {
+  return app.getModel('canvas').get('totalPage')
   }
 })
 
@@ -47,11 +58,13 @@ export default class extends React.Component {
     this.imageManger = new ImageManager()
     this.state = { loading: true }
     this.model = new Model()
+    this.preloader = new Preloader()
   }
 
   componentWillReceiveProps() {
     this.state = {
-      loading: !ImageLoader.hasLoaded(this.model.getCurrentImageUri())
+      //loading: !ImageLoader.hasLoaded(this.model.getCurrentImageUri())
+      loading: this.preloader.hasLoaded(this.model.getCurrentPage())
     }
   }
 
@@ -64,6 +77,34 @@ export default class extends React.Component {
     var canvas = app.getModel('canvas')
     canvas.off('turn:nextPage', ::this.transitionToPage)
   }
+
+  /*
+  loadImage() {
+    let gen = this.preloader.preload()
+      , { loading } = this.state
+      , loaded: () => {
+         this.state = { loading: false }
+      }
+
+    function next(resp) {
+      let result = gen.next(resp)
+
+      if (result.done) return result.value
+
+      result.value.then((data) => {
+
+        if (loading) {
+          this.loaded()
+        }
+
+        console.log('state in preloader: ', state)
+        next(data)
+      })
+    }
+
+    next()
+  }
+  */
 
   transitionToPage() {
     var router = app.get('router')
@@ -78,14 +119,26 @@ export default class extends React.Component {
   render() {
 
     var { loading } = this.state
+    let gen = this.preloader.preload()
+      , result
 
     if (!loading) {
       return this.renderWithImage()
     } else {
+      result = gen.next()
+      result.value.then((data) => {
+        this.setState({ loading: false}) 
+        gen.next(data)
+      })
+      //this.loadImage()
+      //this.preloader.loadImage(this.state)
+      console.log('state', this.state)
+      /*
       ImageLoader.load(this.model.getCurrentImageUri())
         .then(() => {
           this.setState({ loading: false })
         })
+      */
       return this.renderWithLoading()
     }
 

@@ -1,18 +1,39 @@
 import app from 'app'
 
+var Model = Backbone.Model.extend({
+  getCurrentImageUri: () => {
+    var book = app.getModel('book')
+      , currentPage = app.getModel('canvas').get('currentPage')
+
+    return book.getCurrentImageUri(currentPage)
+  }
+
+, getCurrentPage: () => {
+    return app.getModel('canvas').get('currentPage')
+  }
+
+, getTotalPage: () => {
+  return app.getModel('canvas').get('totalPage')
+  }
+
+, getImageUri: (page) => {
+    return app.getModel('book').getCurrentImageUri(page)
+  }
+})
+
 export default class {
   constructor (options) {
     this.xhr = new XMLHttpRequest()
-    this.book = app.getModel('book')
-    this.canvas = app.getModel('canvas')
     this.map = new Map()
+    this.model = new Model()
+    this.MAX_COUNT = 5
   }
 
   *preload() {
-    const MAX_COUNT = 5
-    let page = this.canvas.get('currentPage') + 1
-      , total = this.canvas.get('totalPage')
-      , xhr = this.xhr
+    let xhr = this.xhr
+      , page = this.model.getCurrentPage()
+      , total = this.model.getTotalPage()
+      , src
 
     xhr.responseType = 'blob'
     let fetch = () => {
@@ -24,31 +45,46 @@ export default class {
     }
 
     while (true) {
-      if (page > total || this.map.size > MAX_COUNT) break
+      //TODO override old data in cache
+      if (page > total || this.map.size > this.MAX_COUNT) break
 
-      let src = this.book.getCurrentImage(page).src
+      src = this.model.getImageUri(page)
       xhr.open('GET', src, true)
 
-      let resp = yield fetch()
       try {
-        this.map.set(page, resp.target.response)
+        let data = yield fetch()
+        this.map.set(page, data.target.response)
+        console.log('cached data', this.map)
       } catch (e) {
         // preload failed, retry
+        console.log('catch error', e)
         page -= 1
       }
+      console.log('page', page)
       page += 1
+      console.log('page', page)
     }
+
+    return page
   }
 
-  loadImage() {
+  loadImage(state) {
     let gen = this.preload()
-      , resp
+    var { loading } = state
 
-    function next(data) {
-      let result = gen.next(data)
+    function next(resp) {
+      let result = gen.next(resp)
+
       if (result.done) return result.value
+
       result.value.then((data) => {
-         next(data)
+
+        if (loading) {
+          state = { loading: false }
+        }
+
+        console.log('state in preloader: ', state)
+        next(data)
       })
     }
 
@@ -66,6 +102,11 @@ export default class {
   }
 
   pickImage(page) {
+    console.log('cached data', this.map)
     return this.map.get(page)
+  }
+
+  hasLoaded(page) {
+    return !!(page in this.map)
   }
 }
