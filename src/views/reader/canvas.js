@@ -10,21 +10,20 @@ export default class extends React.Component {
     super(options)
     this.canvas = app.getModel('canvas')
     this.book = app.getModel('book')
+    this.preloader = new Preloader()
   }
 
   componentWillMount() {
     this.canvas.on('turn:nextPage', this.transitionToPage.bind(this))
-    localStorage.clear()
   }
 
   componentWillUnmount() {
     this.canvas.off('turn:nextPage', this.transitionToPage.bind(this))
-    localStorage.clear()
   }
 
   handleClick() {
     this.canvas.trigger('turn:nextPage')
-    Preloader.stopLoading()
+    this.preloader.stopLoading()
   }
 
   transitionToPage() {
@@ -32,42 +31,20 @@ export default class extends React.Component {
     router.transitionTo('page', { page: this.canvas.get('currentPage') })
   }
 
-  /*
-  preload() {
-    var nextPage = this.canvas.getNextPage()
-    if(nextPage === -1)
-      return
-
-    var imgSrc = this.book.getCurrentImage(nextPage).src
-
-    this.xhr.open('GET', imgSrc, true)
-    this.xhr.responseType = 'blob'
-    this.xhr.onload = function(e) {
-      if (this.status === 200) {
-        localStorage.setItem('preload', window.URL.createObjectURL(this.response))
-      }
-    }
-    this.xhr.onerror = function(e) {
-      console.log(`Error ${e.target.status} occured while receiving.`)
-    }
-    this.xhr.send()
-  }
-  */
-
   render() {
     var currentPage = this.canvas.get('currentPage')
       , img = this.book.getCurrentImage(currentPage)
+      , cached = this.preloader.pickImage(currentPage)
 
-    if(localStorage.getItem('preload')) {
-      img.src = localStorage.getItem('preload')
-      localStorage.clear()
+    if (cached) {
+      img.src = window.URL.createObjectURL(cached)
     }
 
     return (
       <div className="canvas">
         <img { ...img }
-          onLoad={ Preloader.loadImage() }
-          onClick={ this.handleClick } />
+          onLoad={ this.preloader.loadImage() }
+          onClick={ this.handleClick.bind(this) } />
       </div>
     )
   }

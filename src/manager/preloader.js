@@ -2,8 +2,7 @@ import app from 'app'
 
 export default class {
   constructor (options) {
-    super(options)
-    this.xhr = new XMLHTTPRequest()
+    this.xhr = new XMLHttpRequest()
     this.book = app.getModel('book')
     this.canvas = app.getModel('canvas')
     this.map = new Map()
@@ -11,33 +10,28 @@ export default class {
 
   *preload() {
     const MAX_COUNT = 5
-    let page = canvas.get('currentPage') + 1
-      , total = canvas.get('totalPage')
+    let page = this.canvas.get('currentPage') + 1
+      , total = this.canvas.get('totalPage')
       , xhr = this.xhr
 
     xhr.responseType = 'blob'
     let fetch = () => {
-      return new Promise ((resole, reject) => {
-        xhr.onreadystatechange = () => {
-          if (xhr.readyState === 200) {
-            resolve(xhr.response)
-          } else {
-            reject()
-          }
-        }
+      return new Promise ((resolve, reject) => {
+        xhr.onload = resolve
+        xhr.onerror = reject
         xhr.send()
       })
     }
 
     while (true) {
-      if (page > total || map.size > MAX_COUNT) break
+      if (page > total || this.map.size > MAX_COUNT) break
 
       let src = this.book.getCurrentImage(page).src
-      xhr.open('GET', src, false)
+      xhr.open('GET', src, true)
 
       let resp = yield fetch()
       try {
-        this.map.set(page, resp)
+        this.map.set(page, resp.target.response)
       } catch (e) {
         // preload failed, retry
         page -= 1
@@ -47,12 +41,12 @@ export default class {
   }
 
   loadImage() {
-    let gen = preload()
+    let gen = this.preload()
       , resp
 
     function next(data) {
-      result = gen.next(data)
-      if (resule.done) return result.value
+      let result = gen.next(data)
+      if (result.done) return result.value
       result.value.then((data) => {
          next(data)
       })
@@ -63,20 +57,15 @@ export default class {
 
   stopLoading() {
     this.xhr.abort()
-    let gen = preload()
-    gen.throw(new Error('stop loading.'))
+    let gen = this.preload()
+    try {
+      gen.throw('stop loading.')
+    } catch (e) {
+      console.log('loading stopped.')
+    }
   }
 
   pickImage(page) {
-    let img = this.map.get(page)
-      , src
-    if (img) {
-      this.map.delete(page)
-      src = window.URL.createObjectURL(img)
-    } else {
-      src = this.book.getCurrentImage(page).src
-    }
-
-    return src
+    return this.map.get(page)
   }
 }
