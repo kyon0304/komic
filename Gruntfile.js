@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     webpack: {
-      options: webpackConfig()
+      options: webpackConfig({ production: true })
     , dist: { cache: false }
     }
   , 'webpack-dev-server': {

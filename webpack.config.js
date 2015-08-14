@@ -3,18 +3,21 @@ var webpack = require('webpack')
   , js_root = path.join(__dirname, 'src')
   , bower_components = path.join(__dirname, 'bower_components')
   , HtmlWebpackPlugin = require('html-webpack-plugin')
+  , assign = Object.assign || require('object.assign');
 
-module.exports = function() {
+module.exports = function(options) {
+  options = options || { production: undefined }
+
   return {
     context: js_root
   , entry: [
       'webpack/hot/only-dev-server'
     , path.join(js_root, 'main.js')
     ]
-  , output: {
+  , output: assign({
       filename: '[name].js'
     , publicPath: '/'
-    }
+    }, options.production && { path: 'dist' })
   , resolve: {
       root: [js_root, bower_components]
     , modulesDirectories: ["node_modules", "bower_components"]
