@@ -10,7 +10,7 @@ var Model = Backbone.Model.extend({
 
 , getImage: (page) => {
   return app.getModel('book').getCurrentImage(page)
-}
+  }
 
 , getCurrentPage: () => {
     return app.getModel('canvas').get('currentPage')
