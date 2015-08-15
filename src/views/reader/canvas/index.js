@@ -9,47 +9,7 @@ import routes from 'routes'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 import ImageManager from './image_manager'
 import CanvasImage from './image'
-import Preloader from 'manager/preloader'
-
-/*
-var ImageLoader = (() => {
-  return new class {
-    constructor() {
-      this.cache = {}
-    }
-
-    hasLoaded(key) {
-      return !!(key in this.cache)
-    }
-
-    load(src) {
-      return new Promise((resolve, reject) => {
-        var image = new Image()
-        image.src = src
-        image.onload = resolve
-        image.onerror = reject
-      })
-    }
-  }
-})()
-*/
-
-var Model = Backbone.Model.extend({
-  getCurrentImageUri: () => {
-    var book = app.getModel('book')
-      , currentPage = app.getModel('canvas').get('currentPage')
-
-    return book.getCurrentImageUri(currentPage)
-  }
-
-, getCurrentPage: () => {
-    return app.getModel('canvas').get('currentPage')
-  }
-
-, getTotalPage: () => {
-  return app.getModel('canvas').get('totalPage')
-  }
-})
+import Loader from 'manager/loader'
 
 export default class extends React.Component {
 
@@ -57,15 +17,14 @@ export default class extends React.Component {
     super(options)
     this.imageManger = new ImageManager()
     this.state = { loading: true }
-    this.model = new Model()
-    this.preloader = new Preloader()
+    this.loader = new Loader()
   }
 
   componentWillReceiveProps() {
     this.state = {
-      //loading: !ImageLoader.hasLoaded(this.model.getCurrentImageUri())
-      loading: this.preloader.hasLoaded(this.model.getCurrentPage())
+      loading: !(this.loader.hasLoaded())
     }
+    console.log('state', this.state)
   }
 
   componentWillMount() {
@@ -77,34 +36,6 @@ export default class extends React.Component {
     var canvas = app.getModel('canvas')
     canvas.off('turn:nextPage', ::this.transitionToPage)
   }
-
-  /*
-  loadImage() {
-    let gen = this.preloader.preload()
-      , { loading } = this.state
-      , loaded: () => {
-         this.state = { loading: false }
-      }
-
-    function next(resp) {
-      let result = gen.next(resp)
-
-      if (result.done) return result.value
-
-      result.value.then((data) => {
-
-        if (loading) {
-          this.loaded()
-        }
-
-        console.log('state in preloader: ', state)
-        next(data)
-      })
-    }
-
-    next()
-  }
-  */
 
   transitionToPage() {
     var router = app.get('router')
@@ -119,26 +50,15 @@ export default class extends React.Component {
   render() {
 
     var { loading } = this.state
-    let gen = this.preloader.preload()
-      , result
 
     if (!loading) {
       return this.renderWithImage()
     } else {
-      result = gen.next()
-      result.value.then((data) => {
-        this.setState({ loading: false}) 
-        gen.next(data)
-      })
-      //this.loadImage()
-      //this.preloader.loadImage(this.state)
-      console.log('state', this.state)
-      /*
-      ImageLoader.load(this.model.getCurrentImageUri())
+      this.loader.loadOnRequest()
         .then(() => {
-          this.setState({ loading: false })
+          this.setState({ loading: false})
         })
-      */
+      console.log('state', this.state)
       return this.renderWithLoading()
     }
 
