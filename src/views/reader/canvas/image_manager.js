@@ -41,6 +41,7 @@ export default class {
     this.width = this.naturalWidth * this.scale
     this.height = this.naturalHeight * this.scale
     this.setBoundaryInfo()
+    return this
   }
 
   setBoundaryInfo() {

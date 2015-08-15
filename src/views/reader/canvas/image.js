@@ -1,15 +1,30 @@
 import React from 'react'
 import app from 'app'
 import $ from 'jquery'
+import Backbone from 'backbone'
 
 import _ from 'mod/utils'
 
 const win = $(window)
 
+class Model extends Backbone.Model {
+  @_.Memoize()
+  getImageScale() {
+    var book = app.getModel('book')
+      , imageDiagonal = book.getNaturalAverageDiagonal()
+      , canvasDiagonal = _.rectangleDiagonal(win.width(), win.height())
+
+    if (canvasDiagonal > imageDiagonal) { return 1 }
+
+    return (canvasDiagonal / imageDiagonal).toFixed(2)
+  }
+}
+
 export default class extends React.Component {
   constructor(options) {
     super(options)
     this.guid = _.uniqueId()
+    this.model = new Model()
     this.imageManger = this.props.manager
   }
 
@@ -25,7 +40,7 @@ export default class extends React.Component {
   rendered() {
     this.imageManger
       .setImage(React.findDOMNode(this))
-      .setMaxWidth(win.width() - 20)
+      .setScale(this.model.getImageScale())
       .moveToCanvasTopCenter()
   }
 
