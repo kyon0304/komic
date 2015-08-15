@@ -3,7 +3,7 @@ import app from 'app'
 import $ from 'jquery'
 
 import _ from 'mod/utils'
-import Loader from 'manager/loader'
+import loader from 'manager/loader'
 
 const win = $(window)
 
@@ -12,7 +12,6 @@ export default class extends React.Component {
     super(options)
     this.guid = _.uniqueId()
     this.imageManger = this.props.manager
-    this.loader = new Loader()
   }
 
   componentWillMount() {
@@ -43,7 +42,7 @@ export default class extends React.Component {
     if (this.dragIsTriggered) { return }
     var canvas = app.getModel('canvas')
     canvas.trigger('turn:nextPage')
-    this.loader.stopLoading()
+    loader.stopLoading()
   }
 
   handleMouseDown(e) {
@@ -80,8 +79,7 @@ export default class extends React.Component {
   render() {
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
-      , img = this.loader.pickImage(currentPage)
-      console.log('render img', img)
+      , img = loader.pickImage(currentPage)
 
     return (
       <img { ...img }
@@ -91,7 +89,7 @@ export default class extends React.Component {
         onMouseDown={ ::this.handleMouseDown }
         onMouseUp={ ::this.handleMouseUp }
         onMouseMove={ ::this.handleMouseMove}
-        onLoad={ ::this.loader.loadInAdvance }
+        onLoad={ ::loader.loadInAdvance }
         />
     )
   }

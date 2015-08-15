@@ -9,7 +9,7 @@ import routes from 'routes'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 import ImageManager from './image_manager'
 import CanvasImage from './image'
-import Loader from 'manager/loader'
+import loader from 'manager/loader'
 
 export default class extends React.Component {
 
@@ -17,14 +17,12 @@ export default class extends React.Component {
     super(options)
     this.imageManger = new ImageManager()
     this.state = { loading: true }
-    this.loader = new Loader()
   }
 
   componentWillReceiveProps() {
     this.state = {
-      loading: !(this.loader.hasLoaded())
+      loading: !(loader.hasLoaded())
     }
-    console.log('state', this.state)
   }
 
   componentWillMount() {
@@ -54,11 +52,10 @@ export default class extends React.Component {
     if (!loading) {
       return this.renderWithImage()
     } else {
-      this.loader.loadOnRequest()
+      loader.loadOnRequest()
         .then(() => {
           this.setState({ loading: false})
         })
-      console.log('state', this.state)
       return this.renderWithLoading()
     }
 

@@ -25,7 +25,7 @@ var Model = Backbone.Model.extend({
   }
 })
 
-export default class {
+class Loader {
   constructor (options) {
     this.xhr = new XMLHttpRequest()
     this.map = new Map()
@@ -39,7 +39,6 @@ export default class {
       , total = this.model.getTotalPage()
       , src
 
-    xhr.responseType = 'blob'
     let fetch = () => {
       return new Promise ((resolve, reject) => {
         xhr.onload = resolve
@@ -55,49 +54,55 @@ export default class {
        * 2. use indexDB or loacalStorage to save memory using
        */
       if (page > total || this.map.size > this.MAX_COUNT) break
+      if (this.map.has(page)) {
+        page += 1
+        continue
+      }
 
       src = this.model.getImageUri(page)
       xhr.open('GET', src, true)
+      xhr.responseType = 'blob'
 
       try {
         let data = yield fetch()
         this.map.set(page, data.target.response)
-        console.log('generator data', this.map)
       } catch (e) {
         // preload failed, retry
-        console.log('catch error', e)
         page -= 1
       }
-      console.log('page', page)
       page += 1
-      console.log('page', page)
     }
 
     return page
   }
 
   loadOnRequest() {
-    return new Promise((resolve, reject) => {
-      let xhr = this.xhr
-        , map = this.map
-        , page = this.model.getCurrentPage()
+    let map = this.map
+      , page = this.model.getCurrentPage()
 
-      xhr.open("GET", this.model.getCurrentImageUri(), true)
-      xhr.responseType = 'blob'
-      xhr.onreadystatechange = handler
-      xhr.send()
+    if (this.hasLoaded(page)) {
+      return Promise.resolve()
+    } else {
+      return new Promise((resolve, reject) => {
+        let xhr = this.xhr
+          , page = this.model.getCurrentPage()
 
-      function handler() {
-        if (this.readyState === 4/* Done */) {
-          console.log('resolve:', this.response)
-          map.set(page, this.response)
-          resolve()
-        } else if(this.status !== 200) {
-          reject(new Error(this.statusText))
+        xhr.open("GET", this.model.getCurrentImageUri(), true)
+        xhr.responseType = 'blob'
+        xhr.onreadystatechange = handler
+        xhr.send()
+
+        function handler() {
+          if (this.readyState === 4/* Done */) {
+            map.set(page, this.response)
+            resolve()
+          } else if(this.status !== 200) {
+            reject(new Error(this.statusText))
+          }
         }
-      }
 
-    })
+      })
+    }
   }
 
   loadInAdvance() {
@@ -127,8 +132,6 @@ export default class {
   }
 
   pickImage(page) {
-    console.log('pick image', page)
-    console.log('pick image', this.map)
     let img = this.model.getImage(page)
       , cached = this.map.get(page)
 
@@ -138,8 +141,10 @@ export default class {
     return img
   }
 
-  hasLoaded() {
-    let page = this.model.getCurrentPage()
-    return !!(page in this.map)
+  hasLoaded(key) {
+    let page = key||this.model.getCurrentPage()
+    return !!(this.map.has(page))
   }
 }
+
+export default new Loader
