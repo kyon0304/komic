@@ -38,6 +38,9 @@ export default class extends React.Component {
             })
           }
         </select>
+        <p className="help-block">
+          * 如果鼠标右键被屏蔽, 请使用 `Alt + 鼠标右键` 呼唤右键菜单。
+        </p>
       </div>
     )
   }

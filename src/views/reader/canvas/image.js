@@ -24,7 +24,6 @@ class Model extends Backbone.Model {
 
 var MouseLeftClickHandlers = {
   CLICK_IAMGE_REGION(e) {
-    console.log(this)
     var point = { pointX: e.pageX, pointY: e.pageY }
     if (this.imageManger.isPointInLeftImage(point)) {
       this.turnPrevPage()
@@ -56,6 +55,12 @@ var MouseRightClickHandlers = {
       this.imageManger.moveToTop({ duration: SCROLL_DURATION })
     }
   }
+}
+
+var ContextMenuHandlers = {
+  CLICK_IAMGE_REGION() {}
+, CLICK(e) { e.preventDefault() }
+, CLICK_WITH_SCROLL(e) { e.preventDefault() }
 }
 
 export default class extends React.Component {
@@ -144,6 +149,12 @@ export default class extends React.Component {
     this.prevPageY = e.pageY
   }
 
+  handleContextMenu(e) {
+    if (e.altKey) { return }
+    var canvas = app.getModel('canvas')
+    this::ContextMenuHandlers[canvas.get('turnpageMethod')](e)
+  }
+
   render() {
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
@@ -155,8 +166,8 @@ export default class extends React.Component {
         onClick={ ::this.handleClick }
         onMouseDown={ ::this.handleMouseDown }
         onMouseUp={ ::this.handleMouseUp }
-        onMouseMove={ ::this.handleMouseMove}
-        onContextMenu={ (e) => { e.preventDefault() } }
+        onMouseMove={ ::this.handleMouseMove }
+        onContextMenu={ this.handleContextMenu }
         />
     )
   }
