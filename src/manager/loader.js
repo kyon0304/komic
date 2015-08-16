@@ -3,14 +3,7 @@ import co from 'co'
 import app from 'app'
 
 var Model = Backbone.Model.extend({
-  getCurrentImageUri: () => {
-    var book = app.getModel('book')
-      , currentPage = app.getModel('canvas').get('currentPage')
-
-    return book.getCurrentImageUri(currentPage)
-  }
-
-, getImage: (page) => {
+  getImage: (page) => {
   return app.getModel('book').getCurrentImage(page)
   }
 
