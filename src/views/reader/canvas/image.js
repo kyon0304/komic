@@ -79,7 +79,7 @@ export default class extends React.Component {
   render() {
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
-      , img = loader.pickImage(currentPage)
+      , img = loader.pickCachedImage(currentPage)
 
     return (
       <img { ...img }

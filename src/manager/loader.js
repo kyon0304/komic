@@ -130,13 +130,11 @@ class Loader {
     }
   }
 
-  pickImage(page) {
+  pickCachedImage(page) {
     let img = this.model.getImage(page)
       , cached = this.map.get(page)
 
-    if (cached) {
-      img.src = window.URL.createObjectURL(cached)
-    }
+    img.src = window.URL.createObjectURL(cached)
     return img
   }
 
