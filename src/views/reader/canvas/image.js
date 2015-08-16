@@ -56,6 +56,15 @@ export default class extends React.Component {
     if (this.dragIsTriggered) { return }
     var canvas = app.getModel('canvas')
 
+    if (canvas.turnpageMethodIs('CLICK_IAMGE_REGION')) {
+      var point = { pointX: e.pageX, pointY: e.pageY }
+      if (this.imageManger.isPointInLeftImage(point)) {
+        this.turnPrevPage()
+      } else if (this.imageManger.isPointInRightImage(point)) {
+        this.turnNextPage()
+      }
+    }
+
     if (canvas.turnpageMethodIs('CLICK')) {
       this.turnNextPage()
     }

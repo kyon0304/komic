@@ -130,6 +130,16 @@ export default class {
     return this
   }
 
+  isPointInLeftImage({ pointX, pointY }) {
+    return ((pointX > this.x && pointX < this.x + this.width / 2)
+      && (pointY > this.y && pointY < this.y + this.height))
+  }
+
+  isPointInRightImage({ pointX, pointY }) {
+    return ((pointX > this.x + this.width / 2 && pointX < this.x + this.width)
+      && (pointY > this.y && pointY < this.y + this.height))
+  }
+
   moveToCanvasCenter() {
     var { viewWidth, viewHeight } = this.viewInfo
       , { width, height } = this
