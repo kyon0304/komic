@@ -3,9 +3,9 @@ import _ from 'mod/utils'
 import browser from 'mod/browser'
 
 const win = $(window)
-const TRANSFORM_PROP = browser.getVendorPropertyName('transform')
-const TRANSFORM_ORIGIN_PROP = browser.getVendorPropertyName('transformOrigin')
-const TRANSITION_PROP = browser.getVendorPropertyName('transition')
+    , TRANSFORM_PROP = browser.getVendorPropertyName('transform')
+    , TRANSFORM_ORIGIN_PROP = browser.getVendorPropertyName('transformOrigin')
+    , TRANSITION_PROP = browser.getVendorPropertyName('transition')
 
 export default class {
   constructor(options) {
