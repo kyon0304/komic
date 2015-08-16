@@ -52,8 +52,21 @@ export default class extends React.Component {
     this.rendered()
   }
 
-  handleClick() {
+  handleClick(e) {
     if (this.dragIsTriggered) { return }
+    var canvas = app.getModel('canvas')
+
+    if (canvas.turnpageMethodIs('CLICK')) {
+      this.turnNextPage()
+    }
+  }
+
+  turnPrevPage() {
+    var canvas = app.getModel('canvas')
+    canvas.trigger('turn:prevPage')
+  }
+
+  turnNextPage() {
     var canvas = app.getModel('canvas')
     canvas.trigger('turn:nextPage')
   }
@@ -66,7 +79,13 @@ export default class extends React.Component {
   }
 
   handleMouseUp(e) {
+    var mouseDown = this.mouseDown
+      , canvas = app.getModel('canvas')
     this.mouseDown = false
+    if (canvas.turnpageMethodIs('CLICK')
+      && e.button === 2 && mouseDown) {
+      this.turnPrevPage()
+    }
   }
 
   handleMouseMove(e) {
@@ -101,6 +120,7 @@ export default class extends React.Component {
         onMouseDown={ ::this.handleMouseDown }
         onMouseUp={ ::this.handleMouseUp }
         onMouseMove={ ::this.handleMouseMove}
+        onContextMenu={ (e) => { e.preventDefault() } }
         />
     )
   }

@@ -8,6 +8,7 @@ export default class extends Model {
       this.set('currentPage', 1)
     }
     this.on('turn:nextPage', this.turnNextPage)
+    this.on('turn:prevPage', this.turnPrevPage)
     this.on('change', this.saveToLocalStorage)
   }
 
@@ -25,8 +26,12 @@ export default class extends Model {
       this.getFromLocalStorage() || {
         totalPage: 0
       , currentPage: 0
-      , turnpageMethod: 'CLICK_WITH_SCROLL'
+      , turnpageMethod: 'CLICK'
       })
+  }
+
+  turnpageMethodIs(turnpageMethod) {
+    return this.get('turnpageMethod') === turnpageMethod
   }
 
   setCurrentPage(currentPage) {
@@ -47,6 +52,11 @@ export default class extends Model {
   turnNextPage() {
     var currentPage = this.get('currentPage')
     this.setCurrentPage(currentPage + 1)
+  }
+
+  turnPrevPage() {
+    var currentPage = this.get('currentPage')
+    this.setCurrentPage(currentPage - 1)
   }
 
 }

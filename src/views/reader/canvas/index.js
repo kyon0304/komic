@@ -57,12 +57,12 @@ export default class extends React.Component {
 
   componentWillMount() {
     var canvas = app.getModel('canvas')
-    canvas.on('turn:nextPage', ::this.transitionToPage)
+    canvas.on('turn:nextPage turn:prevPage', ::this.transitionToPage)
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
-    canvas.off('turn:nextPage', ::this.transitionToPage)
+    canvas.off('turn:nextPage turn:prevPage', ::this.transitionToPage)
   }
 
   transitionToPage() {
