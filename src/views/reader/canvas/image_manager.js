@@ -14,17 +14,14 @@ export default class {
   }
 
   setViewInfo() {
-    this.viewInfo = {
-      viewWidth: win.width()
-    , viewHeight: win.height()
-    }
+    this.viewWidth = win.width()
+    this.viewHeight = win.height()
   }
 
   setImage(image) {
     this.image = $(image)
 
-    var viewInfo = this.viewInfo
-      , el = this.image
+    var el = this.image
 
     this.naturalWidth = el.width()
     this.naturalHeight = el.height()
@@ -45,7 +42,7 @@ export default class {
   }
 
   setBoundaryInfo() {
-    var { viewWidth, viewHeight } = this.viewInfo
+    var { viewWidth, viewHeight } = this
       , deltaWidth = viewWidth - this.width
       , halfDeltaWidth = deltaWidth / 2
       , deltaHeight = viewHeight - this.height
@@ -115,7 +112,7 @@ export default class {
   }
 
   moveToCanvasTopCenter() {
-    var { viewWidth } = this.viewInfo
+    var { viewWidth } = this
       , { width } = this
       , moveToX = (viewWidth - width) / 2
       , moveToY = Math.max(...this.boundaryInfo.yRange)
@@ -130,6 +127,26 @@ export default class {
     return this
   }
 
+  isInTop() {
+    var threshold = -5
+    if (this.height > this.viewHeight && this.y < threshold) { return false }
+    return true
+  }
+
+  moveToTop() {
+    this.transform(this.x, 0)
+  }
+
+  isInBottom() {
+    var threshold = this.viewHeight - this.height + 5
+    if (this.height > this.viewHeight && this.y > threshold) { return false }
+    return true
+  }
+
+  moveToBottom() {
+    this.transform(this.x, this.viewHeight - this.height)
+  }
+
   isPointInLeftImage({ pointX, pointY }) {
     return ((pointX > this.x && pointX < this.x + this.width / 2)
       && (pointY > this.y && pointY < this.y + this.height))
@@ -141,7 +158,7 @@ export default class {
   }
 
   moveToCanvasCenter() {
-    var { viewWidth, viewHeight } = this.viewInfo
+    var { viewWidth, viewHeight } = this
       , { width, height } = this
       , moveToX = (viewWidth - width) / 2
       , moveToY = (viewHeight - height) / 2

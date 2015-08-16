@@ -68,6 +68,14 @@ export default class extends React.Component {
     if (canvas.turnpageMethodIs('CLICK')) {
       this.turnNextPage()
     }
+
+    if (canvas.turnpageMethodIs('CLICK_WITH_SCROLL')) {
+      if (this.imageManger.isInBottom()) {
+        this.turnNextPage()
+      } else {
+        this.imageManger.moveToBottom()
+      }
+    }
   }
 
   turnPrevPage() {
@@ -94,6 +102,13 @@ export default class extends React.Component {
     if (canvas.turnpageMethodIs('CLICK')
       && e.button === 2 && mouseDown) {
       this.turnPrevPage()
+    }
+    if (e.button === 2 && mouseDown && canvas.turnpageMethodIs('CLICK_WITH_SCROLL')) {
+      if (this.imageManger.isInTop()) {
+        this.turnPrevPage()
+      } else {
+        this.imageManger.moveToTop()
+      }
     }
   }
 
