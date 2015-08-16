@@ -12,13 +12,18 @@ _.mixin({
     var [min, max] = range.sort()
     return Math.min(max, Math.max(min, value))
   }
+
+, rectangleDiagonal: (rectangleWidth, rectangleHeight) => {
+    return Math.sqrt(Math.pow(rectangleWidth, 2)
+      + Math.pow(rectangleHeight, 2))
+  }
 })
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-;['debounce'].forEach(function(methodName) {
+;['debounce', 'memoize'].forEach(function(methodName) {
   _.mixin({
     [capitalizeFirstLetter(methodName)]: (...args) => {
       return function decorator(target, key, descriptor) {
