@@ -8,13 +8,25 @@ export default class extends Model {
       this.set('currentPage', 1)
     }
     this.on('turn:nextPage', this.turnNextPage)
+    this.on('change', this.saveToLocalStorage)
+  }
+
+  saveToLocalStorage() {
+    localStorage.setItem('model/canvas'
+      , JSON.stringify(this.toJSON()))
+  }
+
+  getFromLocalStorage() {
+    return JSON.parse(localStorage.getItem('model/canvas'))
   }
 
   defaults() {
-    return {
-      totalPage: 0
-    , currentPage: 0
-    }
+    return (
+      this.getFromLocalStorage() || {
+        totalPage: 0
+      , currentPage: 0
+      , turnpageMethod: 'CLICK_WITH_SCROLL'
+      })
   }
 
   setCurrentPage(currentPage) {
