@@ -95,10 +95,11 @@ class Loader {
 
     spawn().then(() => {
       // generator done, which means cache is full or reach the last page
-      console.log('load in advacne finished.')
+      // maybe replaced by progress bar or sth.
+      //console.log('load in advacne finished.')
     }, () => {
       // generator incomplete and broke, which means xhr failed or sth.
-      console.log('load in advacne failed.')
+      //console.log('load in advacne failed.')
     })
   }
 
@@ -112,7 +113,6 @@ class Loader {
       return Promise.resolve()
     } else {
       fetcher.config('load', (resp) => {
-        console.log('load on request', resp.target.response)
         map.set(page, resp.target.response)
       })
       return fetcher.request(model.getImageUri(page))
@@ -126,7 +126,7 @@ class Loader {
     try {
       gen.throw('stop loading.')
     } catch (e) {
-      console.log('loading stopped.')
+      //console.log('loading stopped.')
     }
   }
 
