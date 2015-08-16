@@ -1,4 +1,5 @@
 import app from 'app'
+import co from 'co'
 
 var Model = Backbone.Model.extend({
   getCurrentImageUri: () => {
@@ -106,19 +107,15 @@ class Loader {
   }
 
   loadInAdvance() {
-    let gen = this.preload()
+    let spawn = co.wrap(::this.preload)
 
-    function next(resp) {
-      let result = gen.next(resp)
-
-      if (result.done) return result.value
-
-      result.value.then((data) => {
-        next(data)
-      })
-    }
-
-    next()
+    spawn().then(() => {
+      // generator done, which means cache is full or reach the last page
+      console.log('load in advacne finished.')
+    }, () => {
+      // generator incomplete and broke, which means xhr failed or sth.
+      console.log('load in advacne failed.')
+    })
   }
 
   stopLoading() {
