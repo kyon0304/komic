@@ -1,5 +1,6 @@
-import app from 'app'
 import co from 'co'
+
+import app from 'app'
 
 var Model = Backbone.Model.extend({
   getCurrentImageUri: () => {
@@ -26,46 +27,59 @@ var Model = Backbone.Model.extend({
   }
 })
 
+class Fetcher {
+  constructor() {
+    this.xhr = new XMLHttpRequest()
+  }
+
+  config(eventType, callback) {
+    this.xhr.addEventListener(eventType, callback, false)
+  }
+
+  request(url) {
+    this.xhr.open('GET', url, true)
+    this.xhr.responseType = 'blob'
+    return new Promise((resolve, reject) => {
+      this.config('load', resolve, false)
+      this.config('error', reject, false)
+      this.xhr.send()
+    })
+  }
+
+  abort() {
+    this.xhr.abort()
+  }
+}
+
+/**
+ * TODO
+ * 1. manage data in map, eg. override old data
+ * 2. use indexDB or loacalStorage to save memory using
+ */
 class Loader {
   constructor (options) {
-    this.xhr = new XMLHttpRequest()
     this.map = new Map()
     this.model = new Model()
     this.MAX_COUNT = 5
+    this.onRequestFetcher = new Fetcher()
+    this.inadvanceFetcher = new Fetcher()
   }
 
   *preload() {
-    let xhr = this.xhr
-      , page = this.model.getCurrentPage() + 1
-      , total = this.model.getTotalPage()
-      , src
-
-    let fetch = () => {
-      return new Promise ((resolve, reject) => {
-        xhr.onload = resolve
-        xhr.onerror = reject
-        xhr.send()
-      })
-    }
+    let fetcher = this.inadvanceFetcher
+      , model = this.model
+      , page = model.getCurrentPage() + 1
+      , total = model.getTotalPage()
 
     while (true) {
-      /*
-       * TODO
-       * 1. manage data in map, eg. override old data
-       * 2. use indexDB or loacalStorage to save memory using
-       */
       if (page > total || this.map.size > this.MAX_COUNT) break
       if (this.map.has(page)) {
         page += 1
         continue
       }
 
-      src = this.model.getImageUri(page)
-      xhr.open('GET', src, true)
-      xhr.responseType = 'blob'
-
       try {
-        let data = yield fetch()
+        let data = yield fetcher.request(model.getImageUri(page))
         this.map.set(page, data.target.response)
       } catch (e) {
         // preload failed, retry
@@ -73,37 +87,7 @@ class Loader {
       }
       page += 1
     }
-
     return page
-  }
-
-  loadOnRequest() {
-    let map = this.map
-      , page = this.model.getCurrentPage()
-
-    if (this.hasLoaded(page)) {
-      return Promise.resolve()
-    } else {
-      return new Promise((resolve, reject) => {
-        let xhr = this.xhr
-          , page = this.model.getCurrentPage()
-
-        xhr.open("GET", this.model.getCurrentImageUri(), true)
-        xhr.responseType = 'blob'
-        xhr.onreadystatechange = handler
-        xhr.send()
-
-        function handler() {
-          if (this.readyState === 4/* Done */) {
-            map.set(page, this.response)
-            resolve()
-          } else if(this.status !== 200) {
-            reject(new Error(this.statusText))
-          }
-        }
-
-      })
-    }
   }
 
   loadInAdvance() {
@@ -118,8 +102,26 @@ class Loader {
     })
   }
 
+  loadOnRequest() {
+    let map = this.map
+      , model = this.model
+      , page = model.getCurrentPage()
+      , fetcher = this.onRequestFetcher
+
+    if (this.hasLoaded(page)) {
+      return Promise.resolve()
+    } else {
+      fetcher.config('load', (resp) => {
+        console.log('load on request', resp.target.response)
+        map.set(page, resp.target.response)
+      })
+      return fetcher.request(model.getImageUri(page))
+    }
+  }
+
   stopLoading() {
-    this.xhr.abort()
+    this.onRequestFetcher.abort()
+    this.inadvanceFetcher.abort()
     let gen = this.preload()
     try {
       gen.throw('stop loading.')
