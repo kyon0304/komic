@@ -6,6 +6,7 @@ import Backbone from 'backbone'
 import _ from 'mod/utils'
 
 const win = $(window)
+    , MOUSE_RIGHT_BUTTON = 2
 
 class Model extends Backbone.Model {
   @_.Memoize()
@@ -17,6 +18,42 @@ class Model extends Backbone.Model {
     if (canvasDiagonal > imageDiagonal) { return 1 }
 
     return (canvasDiagonal / imageDiagonal).toFixed(2)
+  }
+}
+
+var MouseLeftClickHandlers = {
+  CLICK_IAMGE_REGION(e) {
+    console.log(this)
+    var point = { pointX: e.pageX, pointY: e.pageY }
+    if (this.imageManger.isPointInLeftImage(point)) {
+      this.turnPrevPage()
+    } else if (this.imageManger.isPointInRightImage(point)) {
+      this.turnNextPage()
+    }
+  }
+, CLICK() {
+    this.turnNextPage()
+  }
+, CLICK_WITH_SCROLL() {
+    if (this.imageManger.isInBottom()) {
+      this.turnNextPage()
+    } else {
+      this.imageManger.moveToBottom()
+    }
+  }
+}
+
+var MouseRightClickHandlers = {
+  CLICK_IAMGE_REGION() {}
+, CLICK() {
+    this.turnPrevPage()
+  }
+, CLICK_WITH_SCROLL() {
+    if (this.imageManger.isInTop()) {
+      this.turnPrevPage()
+    } else {
+      this.imageManger.moveToTop()
+    }
   }
 }
 
@@ -55,27 +92,7 @@ export default class extends React.Component {
   handleClick(e) {
     if (this.dragIsTriggered) { return }
     var canvas = app.getModel('canvas')
-
-    if (canvas.turnpageMethodIs('CLICK_IAMGE_REGION')) {
-      var point = { pointX: e.pageX, pointY: e.pageY }
-      if (this.imageManger.isPointInLeftImage(point)) {
-        this.turnPrevPage()
-      } else if (this.imageManger.isPointInRightImage(point)) {
-        this.turnNextPage()
-      }
-    }
-
-    if (canvas.turnpageMethodIs('CLICK')) {
-      this.turnNextPage()
-    }
-
-    if (canvas.turnpageMethodIs('CLICK_WITH_SCROLL')) {
-      if (this.imageManger.isInBottom()) {
-        this.turnNextPage()
-      } else {
-        this.imageManger.moveToBottom()
-      }
-    }
+    this::MouseLeftClickHandlers[canvas.get('turnpageMethod')](e)
   }
 
   turnPrevPage() {
@@ -98,17 +115,11 @@ export default class extends React.Component {
   handleMouseUp(e) {
     var mouseDown = this.mouseDown
       , canvas = app.getModel('canvas')
+
     this.mouseDown = false
-    if (canvas.turnpageMethodIs('CLICK')
-      && e.button === 2 && mouseDown) {
-      this.turnPrevPage()
-    }
-    if (e.button === 2 && mouseDown && canvas.turnpageMethodIs('CLICK_WITH_SCROLL')) {
-      if (this.imageManger.isInTop()) {
-        this.turnPrevPage()
-      } else {
-        this.imageManger.moveToTop()
-      }
+
+    if (e.button === MOUSE_RIGHT_BUTTON && mouseDown) {
+      this::MouseRightClickHandlers[canvas.get('turnpageMethod')](e)
     }
   }
 

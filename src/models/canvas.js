@@ -30,10 +30,6 @@ export default class extends Model {
       })
   }
 
-  turnpageMethodIs(turnpageMethod) {
-    return this.get('turnpageMethod') === turnpageMethod
-  }
-
   setCurrentPage(currentPage) {
     currentPage = +currentPage
     var totalPage = this.get('totalPage')
