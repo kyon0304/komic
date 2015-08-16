@@ -26,12 +26,12 @@ export default class extends React.Component {
           鼠标翻页方式
         </label>
         <select id="turnpage-method" className="form-control"
+          defaultValue={ canvas.get('turnpageMethod') }
           name="turnpage-method">
           {
-            options.map(([value, label]) => {
-              var selected = canvas.get('turnpageMethod') === value
+            options.map(([value, label], index) => {
               return (
-                <option value={ value } selected={ selected }>
+                <option value={ value } key={ index }>
                   { label }
                 </option>
               )
