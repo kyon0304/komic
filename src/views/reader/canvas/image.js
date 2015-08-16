@@ -7,6 +7,7 @@ import _ from 'mod/utils'
 
 const win = $(window)
     , MOUSE_RIGHT_BUTTON = 2
+    , SCROLL_DURATION = 230
 
 class Model extends Backbone.Model {
   @_.Memoize()
@@ -38,7 +39,7 @@ var MouseLeftClickHandlers = {
     if (this.imageManger.isInBottom()) {
       this.turnNextPage()
     } else {
-      this.imageManger.moveToBottom()
+      this.imageManger.moveToBottom({ duration: SCROLL_DURATION })
     }
   }
 }
@@ -52,7 +53,7 @@ var MouseRightClickHandlers = {
     if (this.imageManger.isInTop()) {
       this.turnPrevPage()
     } else {
-      this.imageManger.moveToTop()
+      this.imageManger.moveToTop({ duration: SCROLL_DURATION })
     }
   }
 }

@@ -5,6 +5,7 @@ import browser from 'mod/browser'
 const win = $(window)
 const TRANSFORM_PROP = browser.getVendorPropertyName('transform')
 const TRANSFORM_ORIGIN_PROP = browser.getVendorPropertyName('transformOrigin')
+const TRANSITION_PROP = browser.getVendorPropertyName('transition')
 
 export default class {
   constructor(options) {
@@ -75,7 +76,7 @@ export default class {
     this.transform(this.x + deltaX, this.y + deltaY)
   }
 
-  transform(x, y, scale = this.scale) {
+  transform(x, y, scale = this.scale, duration = 0) {
     var node = this.getImage()[0]
       , style = node.style
 
@@ -84,6 +85,7 @@ export default class {
     style[TRANSFORM_PROP] =
       `translate3d(${this.x}px, ${this.y}px, 0) scale(${scale}, ${scale})`
     style[TRANSFORM_ORIGIN_PROP] = '0px 0px'
+    style[TRANSITION_PROP] = duration ? `transform ${duration}ms ease-in-out` : 'none'
 
     return this
   }
@@ -133,8 +135,8 @@ export default class {
     return true
   }
 
-  moveToTop() {
-    this.transform(this.x, 0)
+  moveToTop({ duration }) {
+    this.transform(this.x, 0, this.scale, duration)
   }
 
   isInBottom() {
@@ -143,8 +145,8 @@ export default class {
     return true
   }
 
-  moveToBottom() {
-    this.transform(this.x, this.viewHeight - this.height)
+  moveToBottom({ duration }) {
+    this.transform(this.x, this.viewHeight - this.height, this.scale, duration)
   }
 
   isPointInLeftImage({ pointX, pointY }) {
