@@ -89,7 +89,7 @@ export default class extends React.Component {
         onMouseDown={ ::this.handleMouseDown }
         onMouseUp={ ::this.handleMouseUp }
         onMouseMove={ ::this.handleMouseMove}
-        onLoad={ ::loader.loadInAdvance }
+        onLoad={ ::loader.preloadImages}
         />
     )
   }

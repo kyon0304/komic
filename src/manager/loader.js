@@ -4,7 +4,7 @@ import app from 'app'
 
 var Model = Backbone.Model.extend({
   getImage: (page) => {
-  return app.getModel('book').getCurrentImage(page)
+    return app.getModel('book').getCurrentImage(page)
   }
 
 , getCurrentPage: () => {
@@ -12,7 +12,7 @@ var Model = Backbone.Model.extend({
   }
 
 , getTotalPage: () => {
-  return app.getModel('canvas').get('totalPage')
+    return app.getModel('canvas').get('totalPage')
   }
 
 , getImageUri: (page) => {
@@ -20,29 +20,32 @@ var Model = Backbone.Model.extend({
   }
 })
 
-class Fetcher {
-  constructor() {
-    this.xhr = new XMLHttpRequest()
-  }
+function request(opts) {
+  let xhr = opts.xhr
+    , url = opts.url
+    //, url = 'http://127.0.0.1:8000' + opts.url.slice(1)
 
-  config(eventType, callback) {
-    this.xhr.addEventListener(eventType, callback, false)
-  }
-
-  request(url) {
-    this.xhr.open('GET', url, true)
-    this.xhr.responseType = 'blob'
-    return new Promise((resolve, reject) => {
-      this.config('load', resolve, false)
-      this.config('error', reject, false)
-      this.xhr.send()
+  return new Promise((resolve, reject) => {
+    xhr.open('GET', url, true)
+    xhr.responseType = 'blob'
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response)
+      } else {
+        reject(xhr.status)
+      }
     })
-  }
+    xhr.addEventListener('error', reject)
+    xhr.addEventListener('abort', reject)
 
-  abort() {
-    this.xhr.abort()
-  }
+    xhr.send()
+  })
 }
+
+function spawn(fn) {
+  return co.wrap(fn)()
+}
+
 
 /**
  * TODO
@@ -54,73 +57,63 @@ class Loader {
     this.map = new Map()
     this.model = new Model()
     this.MAX_COUNT = 5
-    this.onRequestFetcher = new Fetcher()
-    this.inadvanceFetcher = new Fetcher()
+    this.xhr = new XMLHttpRequest()
   }
 
-  *preload() {
-    let fetcher = this.inadvanceFetcher
-      , model = this.model
-      , page = model.getCurrentPage() + 1
-      , total = model.getTotalPage()
+  preloadImages() {
+    spawn(function*() {
+      let model = this.model
+        , page = model.getCurrentPage() + 1
+        , total = model.getTotalPage()
+        , src = model.getImageUri(page)
+        , imageBlob
 
-    while (true) {
-      if (page > total || this.map.size > this.MAX_COUNT) break
-      if (this.map.has(page)) {
+      while (true) {
+        if (page > total || this.map.size >= this.MAX_COUNT) break
+        if (this.map.has(page)) {
+          page += 1
+          continue
+        }
+
+        try {
+          imageBlob = yield request({xhr: this.xhr, url: src})
+          this.map.set(page, imageBlob)
+        } catch(e) {
+          page -= 1
+        }
+
         page += 1
-        continue
+        src = model.getImageUri(page)
       }
-
-      try {
-        let data = yield fetcher.request(model.getImageUri(page))
-        this.map.set(page, data.target.response)
-      } catch (e) {
-        // preload failed, retry
-        page -= 1
-      }
-      page += 1
-    }
-    return page
+    }.bind(this))
   }
 
-  loadInAdvance() {
-    let spawn = co.wrap(::this.preload)
-
-    spawn().then(() => {
-      // generator done, which means cache is full or reach the last page
-      // maybe replaced by progress bar or sth.
-      //console.log('load in advacne finished.')
-    }, () => {
-      // generator incomplete and broke, which means xhr failed or sth.
-      //console.log('load in advacne failed.')
-    })
-  }
-
-  loadOnRequest() {
+  loadCurrentImage() {
     let map = this.map
       , model = this.model
       , page = model.getCurrentPage()
-      , fetcher = this.onRequestFetcher
+      , src = model.getImageUri(page)
 
     if (this.hasLoaded(page)) {
       return Promise.resolve()
     } else {
-      fetcher.config('load', (resp) => {
-        map.set(page, resp.target.response)
-      })
-      return fetcher.request(model.getImageUri(page))
+      return request({xhr: this.xhr, url: src})
     }
   }
 
-  stopLoading() {
-    this.onRequestFetcher.abort()
-    this.inadvanceFetcher.abort()
-    let gen = this.preload()
-    try {
-      gen.throw('stop loading.')
-    } catch (e) {
-      //console.log('loading stopped.')
+  store(key, val) {
+    if (!this.map.has(key)) {
+      this.map.set(key, val)
     }
+  }
+
+  storeCurrentImage(val) {
+    let page = this.model.getCurrentPage()
+    this.store(page, val)
+  }
+
+  stopLoading() {
+    this.xhr.abort()
   }
 
   pickCachedImage(page) {
