@@ -65,7 +65,7 @@ class Loader {
       let model = this.model
         , page = model.getCurrentPage() + 1
         , total = model.getTotalPage()
-        , src = model.getImageUri(page)
+        , src
         , imageBlob
 
       while (true) {
@@ -75,6 +75,7 @@ class Loader {
           continue
         }
 
+        src = model.getImageUri(page)
         try {
           imageBlob = yield request({xhr: this.xhr, url: src})
           this.map.set(page, imageBlob)
@@ -83,7 +84,6 @@ class Loader {
         }
 
         page += 1
-        src = model.getImageUri(page)
       }
     }.bind(this))
   }
