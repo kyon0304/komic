@@ -6,6 +6,7 @@ const win = $(window)
     , TRANSFORM_PROP = browser.getVendorPropertyName('transform')
     , TRANSFORM_ORIGIN_PROP = browser.getVendorPropertyName('transformOrigin')
     , TRANSITION_PROP = browser.getVendorPropertyName('transition')
+    , VIEW_EDGE_THRESHOLD = 5
 
 export default class {
   constructor(options) {
@@ -130,7 +131,7 @@ export default class {
   }
 
   isInTop() {
-    var threshold = -5
+    var threshold = - VIEW_EDGE_THRESHOLD
     if (this.height > this.viewHeight && this.y < threshold) { return false }
     return true
   }
@@ -140,7 +141,7 @@ export default class {
   }
 
   isInBottom() {
-    var threshold = this.viewHeight - this.height + 5
+    var threshold = this.viewHeight - this.height + VIEW_EDGE_THRESHOLD
     if (this.height > this.viewHeight && this.y > threshold) { return false }
     return true
   }
