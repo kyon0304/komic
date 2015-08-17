@@ -7,12 +7,12 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     webpack: {
-      options: webpackConfig
+      options: webpackConfig({ production: true })
     , dist: { cache: false }
     }
   , 'webpack-dev-server': {
       options: {
-        webpack: webpackConfig
+        webpack: webpackConfig()
       , contentBase: contentBase
       , publicPath: '/'
       , port: 8000
