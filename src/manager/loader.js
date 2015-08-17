@@ -23,7 +23,6 @@ var Model = Backbone.Model.extend({
 function request(opts) {
   let xhr = opts.xhr
     , url = opts.url
-    //, url = 'http://127.0.0.1:8000' + opts.url.slice(1)
 
   return new Promise((resolve, reject) => {
     xhr.open('GET', url, true)
