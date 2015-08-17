@@ -21,7 +21,7 @@ export default class extends React.Component {
       , canvas = app.getModel('canvas')
 
     return (
-      <div className="from-group">
+      <div className="form-group">
         <label className="control-label" htmlFor="turnpage-method">
           鼠标翻页方式
         </label>
