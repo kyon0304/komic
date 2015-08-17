@@ -40,7 +40,7 @@ export default class extends React.Component {
   renderModalContent() {
     var modalId = this.state.modalId
       , View = modalIdAndViewMap[modalId]
-    if (!View) { throw new Error(`ModalId(${modalId}) dosen\'s exist.`) }
+    if (!View) { throw new Error(`ModalId(${modalId}) dosen's exist.`) }
     return ( <View/> )
   }
 
