@@ -4,6 +4,7 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 
 import _ from 'mod/utils'
+import loader from 'manager/loader'
 
 const win = $(window)
     , MOUSE_RIGHT_BUTTON = 2
@@ -109,6 +110,7 @@ export default class extends React.Component {
   turnNextPage() {
     var canvas = app.getModel('canvas')
     canvas.trigger('turn:nextPage')
+    loader.stopLoading()
   }
 
   handleMouseDown(e) {
@@ -158,15 +160,17 @@ export default class extends React.Component {
   render() {
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
+      , img = loader.pickCachedImage(currentPage)
 
     return (
-      <img { ...book.getCurrentImage(currentPage) }
+      <img { ...img }
         ref="image"
         draggable="false"
         onClick={ ::this.handleClick }
         onMouseDown={ ::this.handleMouseDown }
         onMouseUp={ ::this.handleMouseUp }
-        onMouseMove={ ::this.handleMouseMove }
+        onMouseMove={ ::this.handleMouseMove}
+        onLoad={ ::loader.preloadImages}
         onContextMenu={ this.handleContextMenu }
         />
     )
