@@ -34,7 +34,7 @@ var MouseLeftClickHandlers = {
 , CLICK() {
     this.turnNextPage()
   }
-, CLICK_WITH_SCROLL() {
+, CLICK_TO_SCROLL() {
     if (this.imageManger.isInBottom()) {
       this.turnNextPage()
     } else {
@@ -48,7 +48,7 @@ var MouseRightClickHandlers = {
 , CLICK() {
     this.turnPrevPage()
   }
-, CLICK_WITH_SCROLL() {
+, CLICK_TO_SCROLL() {
     if (this.imageManger.isInTop()) {
       this.turnPrevPage()
     } else {
@@ -60,7 +60,7 @@ var MouseRightClickHandlers = {
 var ContextMenuHandlers = {
   CLICK_IAMGE_REGION() {}
 , CLICK(e) { e.preventDefault() }
-, CLICK_WITH_SCROLL(e) { e.preventDefault() }
+, CLICK_TO_SCROLL(e) { e.preventDefault() }
 }
 
 export default class extends React.Component {

@@ -16,7 +16,7 @@ export default class extends React.Component {
     var options = [
           ['CLICK_IAMGE_REGION', '单击图片左右区域进行翻页']
         , ['CLICK', '鼠标单击左右键进行翻页']
-        , ['CLICK_WITH_SCROLL', '鼠标单击左右键卷动翻页']
+        , ['CLICK_TO_SCROLL', '鼠标单击左右键卷动翻页']
         ]
       , canvas = app.getModel('canvas')
 
