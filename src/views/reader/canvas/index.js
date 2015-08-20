@@ -59,8 +59,6 @@ export default class extends React.Component {
         })
       return this.renderWithLoading()
     }
-
-    return view
   }
 
   mousePositionDragImage(e) {
