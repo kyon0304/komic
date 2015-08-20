@@ -7,9 +7,12 @@ export default class extends React.Component {
   formChanged(e) {
     var form = $(e.currentTarget)
       , turnpageMethod = form.find('select[name=turnpage-method]').val()
+      , mousePositionDragImage = form.find('input[name=mouse-position-drag-image]')
+          .prop("checked")
       , canvas = app.getModel('canvas')
 
     canvas.set('turnpageMethod', turnpageMethod)
+    canvas.set('mousePositionDragImage', mousePositionDragImage)
   }
 
   renderTurnpageMethodSelect() {
@@ -45,6 +48,24 @@ export default class extends React.Component {
     )
   }
 
+  renderMousePositionDragImageCheckbox() {
+    var canvas = app.getModel('canvas')
+    return (
+      <div className="form-group">
+        <div className="right-block">
+          <div className="checkbox">
+            <label>
+              <input type="checkbox"
+                defaultChecked={ canvas.get('mousePositionDragImage') }
+                name="mouse-position-drag-image"
+                /> 通过鼠标位置拖拽图片
+            </label>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   render() {
     return (
       <div className="config-form-modal">
@@ -52,6 +73,7 @@ export default class extends React.Component {
         <form onChange={ ::this.formChanged }
           className="form-horizontal">
           { this.renderTurnpageMethodSelect() }
+          { this.renderMousePositionDragImageCheckbox() }
         </form>
       </div>
     )

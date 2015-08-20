@@ -63,9 +63,36 @@ export default class extends React.Component {
     return view
   }
 
+  mousePositionDragImage(e) {
+    if (!this.prevClientX) {
+      this.prevClientX = e.clientX
+      this.prevClientY = e.clientY
+      return
+    }
+
+    this.imageManger.moveOnMouseMove({
+      prevClientX: this.prevClientX
+    , prevClientY: this.prevClientY
+    , currentClientX: e.clientX
+    , currentClientY: e.clientY
+    })
+
+    this.prevClientX = e.clientX
+    this.prevClientY = e.clientY
+  }
+
+  mouseMoveHandle(e) {
+    var canvas = app.getModel('canvas')
+    if (!canvas.get('mousePositionDragImage')) { return }
+    this.mousePositionDragImage(e)
+  }
+
   renderWithImage() {
     return (
-      <div className="canvas" onWheel={ ::this.scrollHandler }>
+      <div className="canvas"
+        onWheel={ ::this.scrollHandler }
+        onMouseMove= { ::this.mouseMoveHandle }
+        >
         <CanvasImage manager={ this.imageManger } />
       </div>
     )

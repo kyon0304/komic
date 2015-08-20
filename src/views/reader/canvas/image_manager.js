@@ -136,6 +136,31 @@ export default class {
     return true
   }
 
+  moveOnMouseMove({prevClientX, prevClientY, currentClientX, currentClientY}) {
+    var { width, height } = this
+      , { viewWidth, viewHeight } = this
+      , moveToX = 0
+      , moveToY = 0
+
+    if (viewWidth < width && prevClientX) {
+      let delta = currentClientX - prevClientX
+
+      moveToX = - (width - viewWidth - this.x) * delta / (
+        (delta > 0) ? (viewWidth - prevClientX) : (prevClientX - 0)
+        )
+    }
+
+    if (viewHeight < height && prevClientY) {
+      let delta = currentClientY - prevClientY
+
+      moveToY = - (height - viewHeight - this.y) * delta / (
+        (delta > 0) ? (viewHeight - prevClientY) : (prevClientY - 0)
+      )
+    }
+
+    this.move(moveToX, moveToY)
+  }
+
   moveToTop({ duration }) {
     this.transform(this.x, 0, this.scale, duration)
   }
