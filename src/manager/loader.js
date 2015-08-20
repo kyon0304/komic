@@ -21,7 +21,7 @@ var Model = Backbone.Model.extend({
 })
 
 function request(opts) {
-  let xhr = opts.xhr
+  let xhr = opts.xhr || new XMLHttpRequest()
     , url = opts.url
 
   return new Promise((resolve, reject) => {
@@ -56,7 +56,7 @@ class Loader {
     this.map = new Map()
     this.model = new Model()
     this.MAX_COUNT = 5
-    this.xhr = new XMLHttpRequest()
+    this.xhr = undefined
   }
 
   preloadImages() {
@@ -76,7 +76,7 @@ class Loader {
 
         src = model.getImageUri(page)
         try {
-          imageBlob = yield request({xhr: this.xhr, url: src})
+          imageBlob = yield this.request({url: src})
           this.map.set(page, imageBlob)
         } catch(e) {
           page -= 1
@@ -87,19 +87,26 @@ class Loader {
     }.bind(this))
   }
 
+  request(options, ...args) {
+    this.xhr = new XMLHttpRequest()
+    return request(Object.assign({ xhr: this.xhr }, options), ...args)
+  }
+
   loadCurrentImage() {
     let map = this.map
       , model = this.model
       , page = model.getCurrentPage()
       , src = model.getImageUri(page)
+      , noop = function() {}
 
     if (this.hasLoaded(page)) {
       return Promise.resolve()
     } else {
-      return (request({ xhr: this.xhr, url: src })
+      this.xhr = new XMLHttpRequest()
+      return (this.request({ url: src })
         .then((imageBlob) => {
           this.storeCurrentImage(imageBlob)
-        }))
+        }, noop))
     }
   }
 
@@ -115,6 +122,7 @@ class Loader {
   }
 
   stopLoading() {
+    if (!this.xhr) { return }
     this.xhr.abort()
   }
 
