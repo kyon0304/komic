@@ -57,20 +57,32 @@ class Loader {
     this.model = new Model()
     this.MAX_COUNT = 5
     this.xhr = undefined
+    this.preloadASC = true
+  }
+
+  setPreloadASC(ascend) {
+    this.preloadASC = !!ascend
+  }
+
+  getPreloadPage(page) {
+    if (this.preloadASC)
+      return page += 1
+    else
+      return page -= 1
   }
 
   preloadImages() {
     spawn(function*() {
       let model = this.model
-        , page = model.getCurrentPage() + 1
+        , page = this.getPreloadPage(model.getCurrentPage())
         , total = model.getTotalPage()
         , src
         , imageBlob
 
       while (true) {
-        if (page > total || this.map.size >= this.MAX_COUNT) break
+        if (page > total || page < 1) break
         if (this.map.has(page)) {
-          page += 1
+          page = this.getPreloadPage(page)
           continue
         }
 
@@ -82,7 +94,7 @@ class Loader {
           page -= 1
         }
 
-        page += 1
+        page = this.getPreloadPage(page)
       }
     }.bind(this))
   }
