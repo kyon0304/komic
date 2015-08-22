@@ -55,7 +55,7 @@ class Loader {
   constructor (options) {
     this.map = new Map()
     this.model = new Model()
-    this.MAX_COUNT = 5
+    this.THRESHOLD = 5
     this.xhr = undefined
   }
 
@@ -67,7 +67,6 @@ class Loader {
         , total = model.getTotalPage()
         , src
         , imageBlob
-        , reduced = false
 
       while (true) {
         if (this.map.has(page)) {
@@ -76,14 +75,13 @@ class Loader {
         }
 
         if (page > total || page < 1) break
-        if (this.map.size >= this.MAX_COUNT) {
-          reduced = false
-          for (let key of this.map.keys()) {
-            if (key < currentPage) {
-              reduced = this.map.delete(key)
-            }
-          }
-          if (!reduced) break
+        if (page >= currentPage + this.THRESHOLD)  break
+        if (this.map.size >= this.THRESHOLD) {
+          [...this.map.keys()].filter((val) => {
+            return val < currentPage
+          }).map((val) => {
+            this.map.delete(val)
+          })
         }
 
         src = model.getImageUri(page)
@@ -124,17 +122,6 @@ class Loader {
 
   store(key, val) {
     if (!this.map.has(key)) {
-      if (this.map.size >= this.MAX_COUNT) {
-        let del
-          , dis = 0
-        for (let k of this.map.keys()) {
-          if (k - key > dis) {
-            del = k
-            dis = k - key
-          }
-        }
-        this.map.delete(del)
-      }
       this.map.set(key, val)
     }
   }
