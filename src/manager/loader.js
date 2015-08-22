@@ -57,33 +57,33 @@ class Loader {
     this.model = new Model()
     this.MAX_COUNT = 5
     this.xhr = undefined
-    this.preloadASC = true
-  }
-
-  setPreloadASC(ascend) {
-    this.preloadASC = !!ascend
-  }
-
-  getPreloadPage(page) {
-    if (this.preloadASC)
-      return page += 1
-    else
-      return page -= 1
   }
 
   preloadImages() {
     spawn(function*() {
       let model = this.model
-        , page = this.getPreloadPage(model.getCurrentPage())
+        , currentPage = model.getCurrentPage()
+        , page = currentPage + 1
         , total = model.getTotalPage()
         , src
         , imageBlob
+        , reduced = false
 
       while (true) {
-        if (page > total || page < 1) break
         if (this.map.has(page)) {
-          page = this.getPreloadPage(page)
+          page += 1
           continue
+        }
+
+        if (page > total || page < 1) break
+        if (this.map.size >= this.MAX_COUNT) {
+          reduced = false
+          for (let key of this.map.keys()) {
+            if (key < currentPage) {
+              reduced = this.map.delete(key)
+            }
+          }
+          if (!reduced) break
         }
 
         src = model.getImageUri(page)
@@ -94,7 +94,7 @@ class Loader {
           page -= 1
         }
 
-        page = this.getPreloadPage(page)
+        page += 1
       }
     }.bind(this))
   }
@@ -124,6 +124,17 @@ class Loader {
 
   store(key, val) {
     if (!this.map.has(key)) {
+      if (this.map.size >= this.MAX_COUNT) {
+        let del
+          , dis = 0
+        for (let k of this.map.keys()) {
+          if (k - key > dis) {
+            del = k
+            dis = k - key
+          }
+        }
+        this.map.delete(del)
+      }
       this.map.set(key, val)
     }
   }
