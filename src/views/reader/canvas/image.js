@@ -114,15 +114,19 @@ export default class extends React.Component {
     this::MouseLeftClickHandlers[canvas.get('turnpageMethod')](e)
   }
 
-  turnPrevPage() {
+  turnPage(direction) {
     var canvas = app.getModel('canvas')
-    canvas.trigger('turn:prevPage')
+      , eventName = `turn:${direction}`
+
+    canvas.trigger(eventName, { direction })
+  }
+
+  turnPrevPage() {
+    this.turnPage('prevPage')
   }
 
   turnNextPage() {
-    var canvas = app.getModel('canvas')
-    canvas.trigger('turn:nextPage')
-    loader.stopLoading()
+    this.turnPage('nextPage')
   }
 
   handleMouseDown(e) {
