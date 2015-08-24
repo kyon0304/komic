@@ -93,17 +93,6 @@ export default class extends React.Component {
     this.rendered()
   }
 
-  componentWillReceiveProps(...args){
-    // Force <img/> to redraw
-    //  See more: http://codepen.io/hxgdzyuyi/pen/LVooxp
-    var node = React.findDOMNode(this)
-    this.setState({ display: false })
-    _.defer(this::() => {
-      if (!document.contains(node)) { return }
-      this.setState({ display: true })
-    })
-  }
-
   componentDidUpdate() {
     this.rendered()
   }
@@ -114,14 +103,18 @@ export default class extends React.Component {
     this::MouseLeftClickHandlers[canvas.get('turnpageMethod')](e)
   }
 
-  turnPrevPage() {
+  turnPage(direction) {
     var canvas = app.getModel('canvas')
-    canvas.trigger('turn:prevPage')
+
+    canvas.trigger('turn:page', { direction })
+  }
+
+  turnPrevPage() {
+    this.turnPage('prevPage')
   }
 
   turnNextPage() {
-    var canvas = app.getModel('canvas')
-    canvas.trigger('turn:nextPage')
+    this.turnPage('nextPage')
   }
 
   handleMouseDown(e) {
@@ -175,6 +168,7 @@ export default class extends React.Component {
 
     return (
       <img { ...img }
+        key={ _.uniqueId() }
         style={{ display: this.state.display ? 'block' : 'none' }}
         ref="image"
         draggable="false"

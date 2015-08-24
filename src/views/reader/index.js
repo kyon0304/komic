@@ -6,6 +6,7 @@ import Panel from './panel'
 import Canvas from './canvas/index'
 import Thumbview from './thumbview'
 import ModalView from './modals/index'
+import TipView from './tip'
 import app from 'app'
 
 export default class extends React.Component {
@@ -48,6 +49,7 @@ export default class extends React.Component {
           <Canvas ref="canvas" />
           { this.state.thumbview && <Thumbview ref="thumbview" /> }
         <ModalView />
+        <TipView />
       </div>
     )
   }

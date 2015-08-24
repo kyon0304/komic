@@ -7,8 +7,6 @@ export default class extends Model {
     if (options.totalPage && options.totalPage > 0) {
       this.set('currentPage', 1)
     }
-    this.on('turn:nextPage', this.turnNextPage)
-    this.on('turn:prevPage', this.turnPrevPage)
     this.on('change', this.saveToLocalStorage)
   }
 
@@ -46,14 +44,18 @@ export default class extends Model {
     return this
   }
 
-  turnNextPage() {
+  turnPage({ direction }) {
     var currentPage = this.get('currentPage')
-    this.setCurrentPage(currentPage + 1)
+    this.setCurrentPage(currentPage
+      + (direction === 'prevPage' ? -1 : 1))
   }
 
-  turnPrevPage() {
-    var currentPage = this.get('currentPage')
-    this.setCurrentPage(currentPage - 1)
+  currentIsLastPage() {
+    return this.get('currentPage') === this.get('totalPage')
+  }
+
+  currentIsFirstPage() {
+    return this.get('currentPage') === 1
   }
 
 }

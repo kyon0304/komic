@@ -27,17 +27,35 @@ export default class extends React.Component {
 
   componentWillMount() {
     var canvas = app.getModel('canvas')
-    canvas.on('turn:nextPage turn:prevPage', ::this.transitionToPage)
+    canvas
+      .on('turn:page', ::this.showTurnPageTip)
+      .on('turn:page', ::this.transitionToPage)
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
-    canvas.off('turn:nextPage turn:prevPage', ::this.transitionToPage)
+    canvas
+      .off('turn:page', ::this.showTurnPageTip)
+      .off('turn:page', ::this.transitionToPage)
   }
 
-  transitionToPage() {
+  showTurnPageTip({ direction }) {
+    var canvas = app.getModel('canvas')
+
+    app.trigger('close:tip')
+
+    if (canvas.currentIsFirstPage() && direction === 'prevPage') {
+      app.trigger('open:tip', { text: '目前已经是第一页' })
+    } else if (canvas.currentIsLastPage() && direction === 'nextPage') {
+      app.trigger('open:tip', { text: '目前已经是最后一页' })
+    }
+  }
+
+  transitionToPage({ direction }) {
     var router = app.get('router')
       , canvas = app.getModel('canvas')
+
+    canvas.turnPage({ direction })
     router.transitionTo('page', { page: canvas.get('currentPage') })
   }
 
