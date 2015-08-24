@@ -73,7 +73,7 @@ export default class extends React.Component {
     return (
       <VerticalAlignMiddle style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none'}}>
         <FadeInOut
-          key={ Math.random() }
+          key={ _.uniqueId() }
           duration={ this.state.duration }
           onAnimationEnd={ ::this.closeTip }>
           <div className="tip">
