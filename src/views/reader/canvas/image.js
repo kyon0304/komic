@@ -35,11 +35,16 @@ var GetImageScaleFunctions = {
 }
 
 class Model extends Backbone.Model {
-  getImageScale(manager) {
+  defaults() {
+    return { manager: undefined }
+  }
+
+  getImageScale() {
     var canvas = app.getModel('canvas')
+      , manager = this.get('manager')
       , func = this::GetImageScaleFunctions[canvas.get('scalingMethod')]
 
-    return (func ? func(manager).toFixed(2) : 1)
+    return (func ? func(manager.getImageSize()).toFixed(2) : 1)
   }
 }
 
@@ -88,8 +93,8 @@ export default class extends React.Component {
   constructor(options) {
     super(options)
     this.guid = _.uniqueId()
-    this.model = new Model()
     this.manager = this.props.manager
+    this.model = new Model({ manager: this.manager })
     this.state = { display: true }
   }
 
@@ -113,8 +118,7 @@ export default class extends React.Component {
 
     var { width, height } = manager
 
-    manager.setScale(this.model.getImageScale(
-      manager.getImageSize()))
+    manager.setScale(this.model.getImageScale())
       .moveToCanvasTopCenter()
   }
 
@@ -139,9 +143,7 @@ export default class extends React.Component {
 
   scalingMethodChanged(attr) {
     var manager = this.manager
-    manager.scaleTo(
-      this.model.getImageScale(manager.getImageSize())
-    )
+    manager.scaleTo(this.model.getImageScale())
   }
 
   handleClick(e) {
