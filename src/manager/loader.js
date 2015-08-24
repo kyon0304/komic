@@ -96,6 +96,7 @@ class Loader {
   }
 
   loadCurrentImage() {
+    this.stopLoading()
     let map = this.map
       , model = this.model
       , page = model.getCurrentPage()

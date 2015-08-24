@@ -117,13 +117,11 @@ export default class extends React.Component {
   turnPrevPage() {
     var canvas = app.getModel('canvas')
     canvas.trigger('turn:prevPage')
-    loader.stopLoading()
   }
 
   turnNextPage() {
     var canvas = app.getModel('canvas')
     canvas.trigger('turn:nextPage')
-    loader.stopLoading()
   }
 
   handleMouseDown(e) {
