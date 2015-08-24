@@ -28,15 +28,15 @@ export default class extends React.Component {
   componentWillMount() {
     var canvas = app.getModel('canvas')
     canvas
-      .on('turn:nextPage turn:prevPage', ::this.showTurnPageTip)
-      .on('turn:nextPage turn:prevPage', ::this.transitionToPage)
+      .on('turn:page', ::this.showTurnPageTip)
+      .on('turn:page', ::this.transitionToPage)
   }
 
   componentWillUnmount() {
     var canvas = app.getModel('canvas')
     canvas
-      .off('turn:nextPage turn:prevPage', ::this.showTurnPageTip)
-      .off('turn:nextPage turn:prevPage', ::this.transitionToPage)
+      .off('turn:page', ::this.showTurnPageTip)
+      .off('turn:page', ::this.transitionToPage)
   }
 
   showTurnPageTip({ direction }) {

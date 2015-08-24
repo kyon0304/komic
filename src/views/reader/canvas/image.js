@@ -105,9 +105,8 @@ export default class extends React.Component {
 
   turnPage(direction) {
     var canvas = app.getModel('canvas')
-      , eventName = `turn:${direction}`
 
-    canvas.trigger(eventName, { direction })
+    canvas.trigger('turn:page', { direction })
   }
 
   turnPrevPage() {
