@@ -7,12 +7,44 @@ export default class extends React.Component {
   formChanged(e) {
     var form = $(e.currentTarget)
       , turnpageMethod = form.find('select[name=turnpage-method]').val()
+      , scalingMethod = form.find('select[name=scaling-method]').val()
       , mousePositionDragImage = form.find('input[name=mouse-position-drag-image]')
           .prop("checked")
       , canvas = app.getModel('canvas')
 
+    canvas.set('scalingMethod', scalingMethod)
     canvas.set('turnpageMethod', turnpageMethod)
     canvas.set('mousePositionDragImage', mousePositionDragImage)
+  }
+
+  renderScalingMethodSelect() {
+    var options = [
+          ['AUTO', '自动缩放']
+        , ['HORIZONTAL_SCALING', '适应页面宽度']
+        , ['SCALE_TO_WINDOW', '适应到窗口']
+        ]
+      , canvas = app.getModel('canvas')
+
+    return (
+      <div className="form-group">
+        <label className="control-label" htmlFor="scaling-method">
+          画册缩放方式
+        </label>
+        <select id="scaling-method" className="form-control"
+          defaultValue={ canvas.get('scalingMethod') }
+          name="scaling-method">
+          {
+            options.map(([value, label], index) => {
+              return (
+                <option value={ value } key={ index }>
+                  { label }
+                </option>
+              )
+            })
+          }
+        </select>
+      </div>
+    )
   }
 
   renderTurnpageMethodSelect() {
@@ -72,6 +104,7 @@ export default class extends React.Component {
         <h3>操作设置</h3>
         <form onChange={ ::this.formChanged }
           className="form-horizontal">
+          { this.renderScalingMethodSelect() }
           { this.renderTurnpageMethodSelect() }
           { this.renderMousePositionDragImageCheckbox() }
         </form>

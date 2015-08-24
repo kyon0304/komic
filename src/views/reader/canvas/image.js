@@ -10,25 +10,50 @@ const win = $(window)
     , MOUSE_RIGHT_BUTTON = 2
     , SCROLL_DURATION = 230
 
-class Model extends Backbone.Model {
+var GetImageScaleFunctions = {
   @_.Memoize()
-  getImageScale() {
+  AUTO() {
     var book = app.getModel('book')
       , imageDiagonal = book.getNaturalAverageDiagonal()
       , canvasDiagonal = _.rectangleDiagonal(win.width(), win.height())
 
     if (canvasDiagonal > imageDiagonal) { return 1 }
 
-    return (canvasDiagonal / imageDiagonal).toFixed(2)
+    return canvasDiagonal / imageDiagonal
+  }
+
+, HORIZONTAL_SCALING({ naturalWidth, naturalHeight }) {
+    return win.width() / naturalWidth
+  }
+
+, SCALE_TO_WINDOW({ naturalWidth, naturalHeight }) {
+    var xScale = Math.min(win.width() / naturalWidth, 1)
+      , yScale = Math.min(win.height() / naturalHeight, 1)
+
+    return Math.min(xScale, yScale)
+  }
+}
+
+class Model extends Backbone.Model {
+  defaults() {
+    return { manager: undefined }
+  }
+
+  getImageScale() {
+    var canvas = app.getModel('canvas')
+      , manager = this.get('manager')
+      , func = this::GetImageScaleFunctions[canvas.get('scalingMethod')]
+
+    return (func ? func(manager.getImageSize()).toFixed(2) : 1)
   }
 }
 
 var MouseLeftClickHandlers = {
   CLICK_IAMGE_REGION(e) {
     var point = { pointX: e.pageX, pointY: e.pageY }
-    if (this.imageManger.isPointInLeftImage(point)) {
+    if (this.manager.isPointInLeftImage(point)) {
       this.turnPrevPage()
-    } else if (this.imageManger.isPointInRightImage(point)) {
+    } else if (this.manager.isPointInRightImage(point)) {
       this.turnNextPage()
     }
   }
@@ -36,10 +61,10 @@ var MouseLeftClickHandlers = {
     this.turnNextPage()
   }
 , CLICK_TO_SCROLL() {
-    if (this.imageManger.isInBottom()) {
+    if (this.manager.isInBottom()) {
       this.turnNextPage()
     } else {
-      this.imageManger.moveToBottom({ duration: SCROLL_DURATION })
+      this.manager.moveToBottom({ duration: SCROLL_DURATION })
     }
   }
 }
@@ -50,10 +75,10 @@ var MouseRightClickHandlers = {
     this.turnPrevPage()
   }
 , CLICK_TO_SCROLL() {
-    if (this.imageManger.isInTop()) {
+    if (this.manager.isInTop()) {
       this.turnPrevPage()
     } else {
-      this.imageManger.moveToTop({ duration: SCROLL_DURATION })
+      this.manager.moveToTop({ duration: SCROLL_DURATION })
     }
   }
 }
@@ -68,22 +93,26 @@ export default class extends React.Component {
   constructor(options) {
     super(options)
     this.guid = _.uniqueId()
-    this.model = new Model()
-    this.imageManger = this.props.manager
+    this.manager = this.props.manager
+    this.model = new Model({ manager: this.manager })
     this.state = { display: true }
   }
 
   componentWillMount() {
+    var canvas = app.getModel('canvas')
+    canvas.on('change:scalingMethod', this.scalingMethodChanged, this)
     win.on(`resize.${this.guid}`
-      , ::this.imageManger.onResize)
+      , ::this.manager.onResize)
   }
 
   componentWillUnmount() {
+    var canvas = app.getModel('canvas')
+    canvas.off('change:scalingMethod', this.scalingMethodChanged, this)
     win.off(`.${this.guid}`)
   }
 
   rendered() {
-    this.imageManger
+    this.manager
       .setImage(React.findDOMNode(this))
       .setScale(this.model.getImageScale())
       .moveToCanvasTopCenter()
@@ -95,6 +124,11 @@ export default class extends React.Component {
 
   componentDidUpdate() {
     this.rendered()
+  }
+
+  scalingMethodChanged() {
+    var manager = this.manager
+    manager.scaleTo(this.model.getImageScale())
   }
 
   handleClick(e) {
@@ -150,7 +184,7 @@ export default class extends React.Component {
     var deltaX = e.pageX - this.prevPageX
       , deltaY = e.pageY - this.prevPageY
 
-    this.imageManger.move(deltaX, deltaY)
+    this.manager.move(deltaX, deltaY)
     this.prevPageX = e.pageX
     this.prevPageY = e.pageY
   }
