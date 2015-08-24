@@ -19,8 +19,7 @@ class FadeInOut extends React.Component {
   }
 
   render() {
-    var childrenToRender = []
-      , fadeInOut = {
+    var fadeInOut = {
           animation: `fadeInOut ${this.props.duration}ms`
         , opacity: 0
         }
