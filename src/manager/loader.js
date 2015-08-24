@@ -55,24 +55,28 @@ class Loader {
   constructor (options) {
     this.map = new Map()
     this.model = new Model()
-    this.MAX_COUNT = 5
+    this.THRESHOLD = 5
     this.xhr = undefined
   }
 
   preloadImages() {
+    this.stopLoading()
     spawn(function*() {
       let model = this.model
-        , page = model.getCurrentPage() + 1
+        , currentPage = model.getCurrentPage()
+        , page = currentPage + 1
         , total = model.getTotalPage()
         , src
         , imageBlob
 
       while (true) {
-        if (page > total || this.map.size >= this.MAX_COUNT) break
         if (this.map.has(page)) {
           page += 1
           continue
         }
+
+        if (page > total || page < 1) break
+        if (page >= currentPage + this.THRESHOLD)  break
 
         src = model.getImageUri(page)
         try {
@@ -93,6 +97,7 @@ class Loader {
   }
 
   loadCurrentImage() {
+    this.stopLoading()
     let map = this.map
       , model = this.model
       , page = model.getCurrentPage()
@@ -102,7 +107,6 @@ class Loader {
     if (this.hasLoaded(page)) {
       return Promise.resolve()
     } else {
-      this.xhr = new XMLHttpRequest()
       return (this.request({ url: src })
         .then((imageBlob) => {
           this.storeCurrentImage(imageBlob)
