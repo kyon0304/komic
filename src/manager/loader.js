@@ -76,13 +76,6 @@ class Loader {
 
         if (page > total || page < 1) break
         if (page >= currentPage + this.THRESHOLD)  break
-        if (this.map.size >= this.THRESHOLD) {
-          [...this.map.keys()].filter((val) => {
-            return val < currentPage
-          }).map((val) => {
-            this.map.delete(val)
-          })
-        }
 
         src = model.getImageUri(page)
         try {
