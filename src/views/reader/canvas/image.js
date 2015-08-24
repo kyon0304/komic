@@ -10,16 +10,36 @@ const win = $(window)
     , MOUSE_RIGHT_BUTTON = 2
     , SCROLL_DURATION = 230
 
-class Model extends Backbone.Model {
+var GetImageScaleFunctions = {
   @_.Memoize()
-  getImageScale() {
+  AUTO() {
     var book = app.getModel('book')
       , imageDiagonal = book.getNaturalAverageDiagonal()
       , canvasDiagonal = _.rectangleDiagonal(win.width(), win.height())
 
     if (canvasDiagonal > imageDiagonal) { return 1 }
 
-    return (canvasDiagonal / imageDiagonal).toFixed(2)
+    return canvasDiagonal / imageDiagonal
+  }
+
+, HORIZONTAL_SCALING({ naturalWidth, naturalHeight }) {
+    return win.width() / naturalWidth
+  }
+
+, SCALE_TO_WINDOW({ naturalWidth, naturalHeight }) {
+    var xScale = Math.min(win.width() / naturalWidth, 1)
+      , yScale = Math.min(win.height() / naturalHeight, 1)
+
+    return Math.min(xScale, yScale)
+  }
+}
+
+class Model extends Backbone.Model {
+  getImageScale(manager) {
+    var canvas = app.getModel('canvas')
+      , func = this::GetImageScaleFunctions[canvas.get('scalingMethod')]
+
+    return (func ? func(manager).toFixed(2) : 1)
   }
 }
 
@@ -74,18 +94,27 @@ export default class extends React.Component {
   }
 
   componentWillMount() {
+    var canvas = app.getModel('canvas')
+    canvas.on('change:scalingMethod', this.scalingMethodChanged, this)
     win.on(`resize.${this.guid}`
       , ::this.imageManger.onResize)
   }
 
   componentWillUnmount() {
+    var canvas = app.getModel('canvas')
+    canvas.off('change:scalingMethod', this.scalingMethodChanged, this)
     win.off(`.${this.guid}`)
   }
 
   rendered() {
-    this.imageManger
-      .setImage(React.findDOMNode(this))
-      .setScale(this.model.getImageScale())
+    var manager = this.imageManger
+
+    manager.setImage(React.findDOMNode(this))
+
+    var { width, height } = manager
+
+    manager.setScale(this.model.getImageScale(
+      manager.getImageSize()))
       .moveToCanvasTopCenter()
   }
 
@@ -106,6 +135,13 @@ export default class extends React.Component {
 
   componentDidUpdate() {
     this.rendered()
+  }
+
+  scalingMethodChanged(attr) {
+    var manager = this.imageManger
+    manager.scaleTo(
+      this.model.getImageScale(manager.getImageSize())
+    )
   }
 
   handleClick(e) {

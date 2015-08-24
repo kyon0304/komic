@@ -15,6 +15,13 @@ export default class {
     this.scale = 1
   }
 
+  getImageSize() {
+    return {
+      naturalWidth: this.naturalWidth
+    , naturalHeight: this.naturalHeight
+    }
+  }
+
   setViewInfo() {
     this.viewWidth = win.width()
     this.viewHeight = win.height()
@@ -75,6 +82,11 @@ export default class {
 
   move(deltaX, deltaY) {
     this.transform(this.x + deltaX, this.y + deltaY)
+  }
+
+  scaleTo(scale) {
+    this.setScale(scale)
+    this.transform(this.x, this.y, this.scale)
   }
 
   transform(x, y, scale = this.scale, duration = 0) {

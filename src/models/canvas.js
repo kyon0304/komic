@@ -27,6 +27,7 @@ export default class extends Model {
         totalPage: 0
       , currentPage: 0
       , turnpageMethod: 'CLICK'
+      , scalingMethod: 'AUTO'
       , mousePositionDragImage: false
       })
   }
