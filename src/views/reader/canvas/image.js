@@ -112,13 +112,9 @@ export default class extends React.Component {
   }
 
   rendered() {
-    var manager = this.manager
-
-    manager.setImage(React.findDOMNode(this))
-
-    var { width, height } = manager
-
-    manager.setScale(this.model.getImageScale())
+    this.manager
+      .setImage(React.findDOMNode(this))
+      .setScale(this.model.getImageScale())
       .moveToCanvasTopCenter()
   }
 
@@ -141,7 +137,7 @@ export default class extends React.Component {
     this.rendered()
   }
 
-  scalingMethodChanged(attr) {
+  scalingMethodChanged() {
     var manager = this.manager
     manager.scaleTo(this.model.getImageScale())
   }

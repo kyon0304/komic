@@ -137,11 +137,6 @@ export default class {
     return this
   }
 
-  setMaxWidth(maxWidth) {
-    this.setScale( maxWidth / this.naturalWidth )
-    return this
-  }
-
   isInTop() {
     var threshold = - VIEW_EDGE_THRESHOLD
     if (this.height > this.viewHeight && this.y < threshold) { return false }
