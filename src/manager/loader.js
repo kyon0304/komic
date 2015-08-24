@@ -21,7 +21,7 @@ var Model = Backbone.Model.extend({
 })
 
 function request(opts) {
-  let xhr = opts.xhr
+  let xhr = opts.xhr || new XMLHttpRequest()
     , url = opts.url
 
   return new Promise((resolve, reject) => {
@@ -55,28 +55,32 @@ class Loader {
   constructor (options) {
     this.map = new Map()
     this.model = new Model()
-    this.MAX_COUNT = 5
-    this.xhr = new XMLHttpRequest()
+    this.THRESHOLD = 5
+    this.xhr = undefined
   }
 
   preloadImages() {
+    this.stopLoading()
     spawn(function*() {
       let model = this.model
-        , page = model.getCurrentPage() + 1
+        , currentPage = model.getCurrentPage()
+        , page = currentPage + 1
         , total = model.getTotalPage()
         , src
         , imageBlob
 
       while (true) {
-        if (page > total || this.map.size >= this.MAX_COUNT) break
         if (this.map.has(page)) {
           page += 1
           continue
         }
 
+        if (page > total || page < 1) break
+        if (page >= currentPage + this.THRESHOLD)  break
+
         src = model.getImageUri(page)
         try {
-          imageBlob = yield request({xhr: this.xhr, url: src})
+          imageBlob = yield this.request({url: src})
           this.map.set(page, imageBlob)
         } catch(e) {
           page -= 1
@@ -87,19 +91,26 @@ class Loader {
     }.bind(this))
   }
 
+  request(options, ...args) {
+    this.xhr = new XMLHttpRequest()
+    return request(Object.assign({ xhr: this.xhr }, options), ...args)
+  }
+
   loadCurrentImage() {
+    this.stopLoading()
     let map = this.map
       , model = this.model
       , page = model.getCurrentPage()
       , src = model.getImageUri(page)
+      , noop = function() {}
 
     if (this.hasLoaded(page)) {
       return Promise.resolve()
     } else {
-      return (request({ xhr: this.xhr, url: src })
+      return (this.request({ url: src })
         .then((imageBlob) => {
           this.storeCurrentImage(imageBlob)
-        }))
+        }, noop))
     }
   }
 
@@ -115,6 +126,7 @@ class Loader {
   }
 
   stopLoading() {
+    if (!this.xhr) { return }
     this.xhr.abort()
   }
 
