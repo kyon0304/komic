@@ -46,9 +46,9 @@ class Model extends Backbone.Model {
 var MouseLeftClickHandlers = {
   CLICK_IAMGE_REGION(e) {
     var point = { pointX: e.pageX, pointY: e.pageY }
-    if (this.imageManger.isPointInLeftImage(point)) {
+    if (this.manager.isPointInLeftImage(point)) {
       this.turnPrevPage()
-    } else if (this.imageManger.isPointInRightImage(point)) {
+    } else if (this.manager.isPointInRightImage(point)) {
       this.turnNextPage()
     }
   }
@@ -56,10 +56,10 @@ var MouseLeftClickHandlers = {
     this.turnNextPage()
   }
 , CLICK_TO_SCROLL() {
-    if (this.imageManger.isInBottom()) {
+    if (this.manager.isInBottom()) {
       this.turnNextPage()
     } else {
-      this.imageManger.moveToBottom({ duration: SCROLL_DURATION })
+      this.manager.moveToBottom({ duration: SCROLL_DURATION })
     }
   }
 }
@@ -70,10 +70,10 @@ var MouseRightClickHandlers = {
     this.turnPrevPage()
   }
 , CLICK_TO_SCROLL() {
-    if (this.imageManger.isInTop()) {
+    if (this.manager.isInTop()) {
       this.turnPrevPage()
     } else {
-      this.imageManger.moveToTop({ duration: SCROLL_DURATION })
+      this.manager.moveToTop({ duration: SCROLL_DURATION })
     }
   }
 }
@@ -89,7 +89,7 @@ export default class extends React.Component {
     super(options)
     this.guid = _.uniqueId()
     this.model = new Model()
-    this.imageManger = this.props.manager
+    this.manager = this.props.manager
     this.state = { display: true }
   }
 
@@ -97,7 +97,7 @@ export default class extends React.Component {
     var canvas = app.getModel('canvas')
     canvas.on('change:scalingMethod', this.scalingMethodChanged, this)
     win.on(`resize.${this.guid}`
-      , ::this.imageManger.onResize)
+      , ::this.manager.onResize)
   }
 
   componentWillUnmount() {
@@ -107,7 +107,7 @@ export default class extends React.Component {
   }
 
   rendered() {
-    var manager = this.imageManger
+    var manager = this.manager
 
     manager.setImage(React.findDOMNode(this))
 
@@ -138,7 +138,7 @@ export default class extends React.Component {
   }
 
   scalingMethodChanged(attr) {
-    var manager = this.imageManger
+    var manager = this.manager
     manager.scaleTo(
       this.model.getImageScale(manager.getImageSize())
     )
@@ -193,7 +193,7 @@ export default class extends React.Component {
     var deltaX = e.pageX - this.prevPageX
       , deltaY = e.pageY - this.prevPageY
 
-    this.imageManger.move(deltaX, deltaY)
+    this.manager.move(deltaX, deltaY)
     this.prevPageX = e.pageX
     this.prevPageY = e.pageY
   }
