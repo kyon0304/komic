@@ -60,6 +60,7 @@ class Loader {
   }
 
   preloadImages() {
+    this.stopLoading()
     spawn(function*() {
       let model = this.model
         , currentPage = model.getCurrentPage()
@@ -106,7 +107,6 @@ class Loader {
     if (this.hasLoaded(page)) {
       return Promise.resolve()
     } else {
-      this.xhr = new XMLHttpRequest()
       return (this.request({ url: src })
         .then((imageBlob) => {
           this.storeCurrentImage(imageBlob)
