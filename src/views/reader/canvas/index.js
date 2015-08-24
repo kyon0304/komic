@@ -54,9 +54,8 @@ export default class extends React.Component {
   transitionToPage({ direction }) {
     var router = app.get('router')
       , canvas = app.getModel('canvas')
-      , isTurnNextPage = direction === 'nextPage'
 
-    canvas[ isTurnNextPage ? 'turnNextPage' : 'turnPrevPage' ]()
+    canvas.turnPage({ direction })
     router.transitionTo('page', { page: canvas.get('currentPage') })
   }
 

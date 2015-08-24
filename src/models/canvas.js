@@ -44,14 +44,10 @@ export default class extends Model {
     return this
   }
 
-  turnNextPage() {
+  turnPage({ direction }) {
     var currentPage = this.get('currentPage')
-    this.setCurrentPage(currentPage + 1)
-  }
-
-  turnPrevPage() {
-    var currentPage = this.get('currentPage')
-    this.setCurrentPage(currentPage - 1)
+    this.setCurrentPage(currentPage
+      + (direction === 'prevPage' ? -1 : 1))
   }
 
   currentIsLastPage() {
