@@ -18,6 +18,14 @@ const Events = {
 , LOAD_END: 'loadend'
 }
 
+const States = {
+  UNSENT: 0
+, OPENED: 1
+, HEADERS_RECEIVED: 2
+, LOADING: 3
+, DONE: 4
+}
+
 const ResponseTypes = {
   DOM_STRING: ''
 , ARRAY_BUFFER: 'arraybuffer'
@@ -64,6 +72,7 @@ var request = ({
 }
 
 request.Events = Events
+request.States = States
 request.ResponseTypes = ResponseTypes
 request.Methods = Methods
 

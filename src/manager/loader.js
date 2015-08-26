@@ -60,10 +60,11 @@ class Loader {
 
         src = model.getImageUri(page)
         try {
-          imageBlob = yield this.request({url: src})
+          imageBlob = yield this.requestWrapper({url: src})
           this.map.set(page, imageBlob)
         } catch(e) {
           page -= 1
+          break
         }
 
         page += 1
@@ -71,7 +72,7 @@ class Loader {
     }.bind(this))
   }
 
-  request(options, ...args) {
+  requestWrapper(options, ...args) {
     this.xhr = new XMLHttpRequest()
     return request(Object.assign({ xhr: this.xhr }, options), ...args)
   }
@@ -107,6 +108,7 @@ class Loader {
 
   stopLoading() {
     if (!this.xhr) { return }
+    if (this.xhr.readyState === request.States.DONE) { return }
     this.xhr.abort()
   }
 
