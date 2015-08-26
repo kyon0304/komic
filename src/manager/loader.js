@@ -108,7 +108,7 @@ class Loader {
 
   stopLoading() {
     if (!this.xhr) { return }
-    if ( this.xhr.readyState === 4/*DONE*/) { return }
+    if (this.xhr.readyState === request.States.DONE) { return }
     this.xhr.abort()
   }
 
