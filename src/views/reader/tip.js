@@ -1,7 +1,7 @@
 import React from 'react'
 import app from 'app'
 
-import _ from 'mod/utils'
+import _ from 'mods/utils'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 import ReactTransitionEvents from 'react/lib/ReactTransitionEvents'
 

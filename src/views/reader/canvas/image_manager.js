@@ -1,6 +1,6 @@
 import $ from 'jquery'
-import _ from 'mod/utils'
-import browser from 'mod/browser'
+import _ from 'mods/utils'
+import browser from 'mods/browser'
 
 const win = $(window)
     , TRANSFORM_PROP = browser.getVendorPropertyName('transform')
