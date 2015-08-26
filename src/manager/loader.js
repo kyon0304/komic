@@ -1,6 +1,7 @@
 import co from 'co'
 
 import app from 'app'
+import store from 'mods/store'
 
 var Model = Backbone.Model.extend({
   getImage: (page) => {
@@ -53,10 +54,13 @@ function spawn(fn) {
  */
 class Loader {
   constructor (options) {
-    this.map = new Map()
     this.model = new Model()
     this.THRESHOLD = 5
     this.xhr = undefined
+    store.openDB().then((db) => {
+      console.log('open indexedDB successfully')
+    })
+    this.storedPages = []
   }
 
   preloadImages() {
@@ -68,9 +72,10 @@ class Loader {
         , total = model.getTotalPage()
         , src
         , imageBlob
+        , imageData = {'page': page, 'image': imageBlob}
 
       while (true) {
-        if (this.map.has(page)) {
+        if (page in storedPages) {
           page += 1
           continue
         }
@@ -81,7 +86,13 @@ class Loader {
         src = model.getImageUri(page)
         try {
           imageBlob = yield this.request({url: src})
-          this.map.set(page, imageBlob)
+
+          imageData.page = page
+          imageData.image = imageBlob
+          store.addImageData(imageData).then(() => {
+             this.storedPages.push(page)
+          })
+
         } catch(e) {
           page -= 1
         }
@@ -98,14 +109,17 @@ class Loader {
 
   loadCurrentImage() {
     this.stopLoading()
-    let map = this.map
-      , model = this.model
+    let model = this.model
       , page = model.getCurrentPage()
       , src = model.getImageUri(page)
       , noop = function() {}
 
     if (this.hasLoaded(page)) {
       return Promise.resolve()
+    } else if (sotre.has(key)) {
+      return store.getImageBlob(key).then(() => {
+         this.storedPages.push(key)
+      })
     } else {
       return (this.request({ url: src })
         .then((imageBlob) => {
@@ -115,8 +129,13 @@ class Loader {
   }
 
   store(key, val) {
-    if (!this.map.has(key)) {
-      this.map.set(key, val)
+    if(key in this.storedPages) return
+    if (!store.has(key)) {
+      store.addImageData().then(() => {
+         this.storePages.push(key)
+      })
+    } else {
+      this.storedPages.push(key)
     }
   }
 
@@ -132,15 +151,23 @@ class Loader {
 
   pickCachedImage(page) {
     let img = this.model.getImage(page)
-      , cached = this.map.get(page)
+      , picked = false
+      , noop = function() {}
 
-    img.src = window.URL.createObjectURL(cached)
+    store.getImageBlob(page).then((cached) => {
+      img.src = window.URL.createObjectURL(cached)
+      picked = true
+    }).catch ((e) => {
+      picked = true
+    })
+
+    while(!picked) { noop() }
     return img
   }
 
   hasLoaded(key) {
     let page = key||this.model.getCurrentPage()
-    return !!(this.map.has(page))
+    return !!(page in this.storedPages)
   }
 }
 

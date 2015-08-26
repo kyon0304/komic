@@ -1,5 +1,5 @@
 import { Model } from 'backbone'
-import _ from 'mod/utils'
+import _ from 'mods/utils'
 
 export default Model.extend({
 
@@ -60,5 +60,9 @@ export default Model.extend({
         }
       })
     )
+  }
+
+, getBookTitle() {
+    return this.get('name')
   }
 })
