@@ -3,7 +3,7 @@ import app from 'app'
 import $ from 'jquery'
 import Backbone from 'backbone'
 
-import _ from 'mod/utils'
+import _ from 'mods/utils'
 import loader from 'manager/loader'
 
 const win = $(window)

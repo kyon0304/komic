@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
-import _ from 'mod/utils'
+import _ from 'mods/utils'
 
 import Panel from './panel'
 import Canvas from './canvas/index'
