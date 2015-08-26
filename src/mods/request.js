@@ -55,12 +55,16 @@ var request = ({
         )
       .concat(Object.entries(events))
 
-    eventAndFuncs.forEach((event, func) => {
-      xhr.addEventListener(events, func)
+    eventAndFuncs.forEach(([ eventName, func ]) => {
+      xhr.addEventListener(eventName, func)
     })
 
     xhr.send()
   })
 }
+
+request.Events = Events
+request.ResponseTypes = ResponseTypes
+request.Methods = Methods
 
 export default request

@@ -76,7 +76,7 @@ class Loader {
     return request(Object.assign({ xhr: this.xhr }, options), ...args)
   }
 
-  loadCurrentImage() {
+  loadCurrentImage({ requestEvents }) {
     this.stopLoading()
     let map = this.map
       , model = this.model
@@ -87,7 +87,7 @@ class Loader {
     if (this.hasLoaded(page)) {
       return Promise.resolve()
     } else {
-      return (this.request({ url: src })
+      return (this.request({ url: src, events: requestEvents })
         .then((imageBlob) => {
           this.storeCurrentImage(imageBlob)
         }, noop))
