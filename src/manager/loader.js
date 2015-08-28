@@ -57,10 +57,10 @@ class Loader {
     this.model = new Model()
     this.THRESHOLD = 5
     this.xhr = undefined
-    store.openDB().then((db) => {
+    store.openDB().then(() => {
       console.log('open indexedDB successfully')
     })
-    this.storedPages = []
+    this.presentPages = new Map()
   }
 
   preloadImages() {
@@ -72,10 +72,9 @@ class Loader {
         , total = model.getTotalPage()
         , src
         , imageBlob
-        , imageData = {'page': page, 'image': imageBlob}
 
       while (true) {
-        if (page in storedPages) {
+        if (presentPages.has(page)) {
           page += 1
           continue
         }
@@ -86,13 +85,7 @@ class Loader {
         src = model.getImageUri(page)
         try {
           imageBlob = yield this.request({url: src})
-
-          imageData.page = page
-          imageData.image = imageBlob
-          store.addImageData(imageData).then(() => {
-             this.storedPages.push(page)
-          })
-
+          storeImage(page, imageBlob)
         } catch(e) {
           page -= 1
         }
@@ -116,32 +109,38 @@ class Loader {
 
     if (this.hasLoaded(page)) {
       return Promise.resolve()
-    } else if (sotre.has(key)) {
-      return store.getImageBlob(key).then(() => {
-         this.storedPages.push(key)
-      })
     } else {
-      return (this.request({ url: src })
-        .then((imageBlob) => {
-          this.storeCurrentImage(imageBlob)
-        }, noop))
+      store.getImageBlob(page).then((imageBlob) => {
+        this.presentPages.set(page, imageBlob)
+      }, () => {
+        return (this.request({ url: src })
+          .then((imageBlob) => {
+            this.storeCurrentImage(imageBlob)
+          }, noop))
+      })
     }
   }
 
-  store(key, val) {
-    if(key in this.storedPages) return
-    if (!store.has(key)) {
-      store.addImageData().then(() => {
-         this.storePages.push(key)
-      })
-    } else {
-      this.storedPages.push(key)
-    }
+  storeImage(key, val) {
+    let imageData
+
+    imageData.page = key
+    imageData.imageBlob = val
+    store.addImageData(imageData).then(() => {
+      this.presentPages.set(page, imageBlob)
+    })
   }
 
   storeCurrentImage(val) {
-    let page = this.model.getCurrentPage()
-    this.store(page, val)
+    let key = this.model.getCurrentPage()
+
+    if(this.presentPages.has(key)) { return }
+
+    store.getImageBlob(key).then(function(image) {
+      this.presentPages.set(key, image)
+    }, function() {
+      this.storeImage(key, val)
+    })
   }
 
   stopLoading() {
@@ -151,23 +150,16 @@ class Loader {
 
   pickCachedImage(page) {
     let img = this.model.getImage(page)
-      , picked = false
-      , noop = function() {}
+      , cached = this.presentPages.get(page)
 
-    store.getImageBlob(page).then((cached) => {
-      img.src = window.URL.createObjectURL(cached)
-      picked = true
-    }).catch ((e) => {
-      picked = true
-    })
+    img.src = window.URL.createObjectURL(cached)
 
-    while(!picked) { noop() }
     return img
   }
 
   hasLoaded(key) {
     let page = key||this.model.getCurrentPage()
-    return !!(page in this.storedPages)
+    return !!(this.presentPages.has(page))
   }
 }
 
