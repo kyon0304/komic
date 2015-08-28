@@ -6,22 +6,35 @@ import Backbone from 'backbone'
 import app from 'app'
 import routes from 'routes'
 
+import request from 'mods/request'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 import ImageManager from './image_manager'
 import CanvasImage from './image'
 import loader from 'manager/loader'
+
+const LoadingStates = {
+  LOADED: Symbol()
+, READY: Symbol()
+, LOADING: Symbol()
+}
 
 export default class extends React.Component {
 
   constructor(options) {
     super(options)
     this.imageManger = new ImageManager()
-    this.state = { loading: true }
+    this.state = { loadingState: LoadingStates.READY, percent: 0 }
+    this.renderStrategy = {
+        [ LoadingStates.LOADING ]: this.renderWithLoading
+      , [ LoadingStates.LOADED ]: this.renderWithImage
+      , [ LoadingStates.READY ]: this.renderAndLoadImage
+    }
   }
 
   componentWillReceiveProps() {
+    var { READY, LOADED } = LoadingStates
     this.state = {
-      loading: !(loader.hasLoaded())
+      loadingState: (loader.hasLoaded()) ? LOADED : READY
     }
   }
 
@@ -65,17 +78,10 @@ export default class extends React.Component {
 
   render() {
 
-    var { loading } = this.state
+    var { loadingState } = this.state
+      , renderMethod = this.renderStrategy[loadingState]
 
-    if (!loading) {
-      return this.renderWithImage()
-    } else {
-      loader.loadCurrentImage()
-        .then(() => {
-          this.setState({ loading: false})
-        })
-      return this.renderWithLoading()
-    }
+    return this::renderMethod()
   }
 
   mousePositionDragImage(e) {
@@ -113,13 +119,29 @@ export default class extends React.Component {
     )
   }
 
+  renderAndLoadImage() {
+    loader.loadCurrentImage({
+      requestEvents: {
+        [request.Events.PROGRESS]: (e)=> {
+          this.setState({
+            loadingState: LoadingStates.LOADING
+          , percent: Math.round(e.loaded / e.total * 100)
+          })
+        }
+      }})
+      .then(() => {
+        this.setState({ loadingState: LoadingStates.LOADED })
+      })
+    return this.renderWithLoading()
+  }
+
   renderWithLoading() {
     return (
       <div className="canvas">
         <VerticalAlignMiddle style={
           { width: '100%', height: '100%', textAlign: 'center' }
           }>
-          载入中
+          载入中, { this.state.percent }%
         </VerticalAlignMiddle>
       </div>
     )

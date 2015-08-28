@@ -2,6 +2,7 @@ import co from 'co'
 
 import app from 'app'
 import store from 'mods/store'
+import request from 'mods/request'
 
 var Model = Backbone.Model.extend({
   getImage: (page) => {
@@ -21,31 +22,10 @@ var Model = Backbone.Model.extend({
   }
 })
 
-function request(opts) {
-  let xhr = opts.xhr || new XMLHttpRequest()
-    , url = opts.url
-
-  return new Promise((resolve, reject) => {
-    xhr.open('GET', url, true)
-    xhr.responseType = 'blob'
-    xhr.addEventListener('load', () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(xhr.response)
-      } else {
-        reject(xhr.status)
-      }
-    })
-    xhr.addEventListener('error', reject)
-    xhr.addEventListener('abort', reject)
-
-    xhr.send()
-  })
-}
 
 function spawn(fn) {
   return co.wrap(fn)()
 }
-
 
 /**
  * TODO
@@ -97,7 +77,7 @@ class Loader {
     return request(Object.assign({ xhr: this.xhr }, options), ...args)
   }
 
-  loadCurrentImage() {
+  loadCurrentImage({ requestEvents }) {
     this.stopLoading()
     let model = this.model
       , page = model.getCurrentPage()
