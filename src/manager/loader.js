@@ -65,6 +65,7 @@ class Loader {
           this.storeImage(page, imageBlob)
         } catch(e) {
           page -= 1
+          break
         }
 
         page += 1
@@ -130,6 +131,7 @@ class Loader {
 
   stopLoading() {
     if (!this.xhr) { return }
+    if ( this.xhr.readyState === 4/*DONE*/) { return }
     this.xhr.abort()
   }
 
