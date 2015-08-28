@@ -61,7 +61,7 @@ class Loader {
 
         src = model.getImageUri(page)
         try {
-          imageBlob = yield this.request({url: src})
+          imageBlob = yield this.fetch({url: src})
           this.storeImage(page, imageBlob)
         } catch(e) {
           page -= 1
@@ -73,7 +73,7 @@ class Loader {
     }.bind(this))
   }
 
-  request(options, ...args) {
+  fetch(options, ...args) {
     this.xhr = new XMLHttpRequest()
     return request(Object.assign({ xhr: this.xhr }, options), ...args)
   }
@@ -96,7 +96,7 @@ class Loader {
             this.presentPages.set(page, imageBlob)
             resolve()
           }, () => {
-            this.request({ url: src })
+            this.fetch({ url: src, events: requestEvents })
               .then((imageBlob) => {
                 this.storeCurrentImage(imageBlob).then(() => {
                   resolve()
@@ -131,7 +131,7 @@ class Loader {
 
   stopLoading() {
     if (!this.xhr) { return }
-    if ( this.xhr.readyState === 4/*DONE*/) { return }
+    if (this.xhr.readyState === request.States.DONE) { return }
     this.xhr.abort()
   }
 
