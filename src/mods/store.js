@@ -6,20 +6,22 @@ const DB_VERSION = 1
 
 class Store {
   constructor() {
-    this.db
+    this.db = undefined
   }
 
   openDB() {
+    if (this.db) { return Promise.resolve() }
+
     let req = indexedDB.open(DB_NAME, DB_VERSION)
     return new Promise((resolve, reject) => {
-      req.onsuccess = function(evt) {
+      req.onsuccess = (evt) => {
         this.db = evt.target.result
         resolve(this.db)
-      }
+      }.bind(this)
       req.onerror = (evt) => {
         reject(evt.target.errorCode)
       }
-      req.onupgradeneeded = function (evt) {
+      req.onupgradeneeded = (evt) => {
        let store = evt.currentTarget.result.createObjectStore(
             DB_TABLE_NAME, {keyPath: 'id', autoIncrement: true})
          store.createIndex('page', 'page', {unique: true})
@@ -37,7 +39,7 @@ class Store {
   }
 
   clearObjectStore(store_name) {
-    let store = this.getObjectStore(store_name, 'readwrite')
+    let store = this.getObjectStore(DB_TABLE_NAME, 'readwrite')
       , req = store.clear()
     return new Promise((resolve, reject) => {
       req.onsuccess = (evt) => {
@@ -54,7 +56,11 @@ class Store {
       , req = store.get(key)
     return new Promise((resolve, reject) => {
       req.onsuccess = (evt) => {
-        resolve(evt.target.result)
+        if (evt.target.result) {
+          resolve(evt.target.result.imageBlob)
+        } else {
+          reject('not found')
+        }
       }
       req.onerror = (evt) => {
         reject(evt.target.errorCode)
@@ -66,7 +72,7 @@ class Store {
     let store = this.getObjectStore(DB_TABLE_NAME, 'readwrite')
       , req
     try {
-      req = streo.add(imageData)
+      req = store.add(imageData)
     } catch (e) {
       throw e
     }
