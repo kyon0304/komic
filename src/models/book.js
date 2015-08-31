@@ -61,8 +61,4 @@ export default Model.extend({
       })
     )
   }
-
-, getBookTitle() {
-    return this.get('name')
-  }
 })

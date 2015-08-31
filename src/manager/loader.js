@@ -1,8 +1,9 @@
 import co from 'co'
 
 import app from 'app'
-import store from 'mods/store'
+import Store from 'mods/store'
 import request from 'mods/request'
+import _ from 'mods/utils'
 
 var Model = Backbone.Model.extend({
   getImage: (page) => {
@@ -19,6 +20,10 @@ var Model = Backbone.Model.extend({
 
 , getImageUri: (page) => {
     return app.getModel('book').getCurrentImageUri(page)
+  }
+
+, getBookTitle: () => {
+    return app.getModel('book').get('name')
   }
 })
 
@@ -38,6 +43,12 @@ class Loader {
     this.THRESHOLD = 5
     this.xhr = undefined
     this.presentPages = new Map()
+    let config = {
+      'name': 'komic'
+    , 'version': 1
+    , 'storeName': 'book' //this.model.getBookTitle()
+    }
+    this.store = new Store(config)
   }
 
   preloadImages() {
@@ -84,41 +95,38 @@ class Loader {
       , page = model.getCurrentPage()
       , src = model.getImageUri(page)
       , noop = function() {}
+      , self = this
+
+    _.once(this.store.config({ 'storeName': encodeURI(this.model.getBookTitle()) }))
 
     if (this.hasLoaded(page)) {
       return Promise.resolve()
     } else {
       return new Promise((resolve, reject) => {
-        store.openDB().catch(() => {
-          alert('load current open db failed')
-        }).then(() => {
-          store.getImageBlob(page).then((imageBlob)=>{
-            this.presentPages.set(page, imageBlob)
-            resolve()
-          }, () => {
-            this.fetch({ url: src, events: requestEvents })
-              .then((imageBlob) => {
-                this.storeCurrentImage(imageBlob).then(() => {
-                  resolve()
-                })
-              }, noop)
-          })
-        }.bind(this), () => {
-            alert('get stored data failed')
+        self.store.getItem(page).then((imageBlob) => {
+          self.presentPages.set(page, imageBlob)
+          resolve()
+        }, () => {
+          self.fetch({ url: src, events: requestEvents })
+            .then((imageBlob) => {
+               self.storeCurrentImage(imageBlob).then(() => {
+                 resolve()
+               }, noop)
+            })
         })
-
       })
     }
   }
 
   storeImage(key, val) {
     let imageData = {'page': key, 'imageBlob':val}
+      , self = this
 
-    return store.addImageData(imageData).then(() => {
-      this.presentPages.set(key, val)
-    }.bind(this), () => {
-      this.presentPages.set(key, val)
-    }.bind(this))
+    return self.store.setItem(imageData).then(() => {
+      self.presentPages.set(key, val)
+    }, () => {
+      self.presentPages.set(key, val)
+    })
   }
 
   storeCurrentImage(val) {
