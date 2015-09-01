@@ -1,7 +1,7 @@
 import co from 'co'
 
 import app from 'app'
-import Store from 'mods/store'
+import Store from './store'
 import request from 'mods/request'
 import _ from 'mods/utils'
 
