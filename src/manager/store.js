@@ -24,7 +24,7 @@ export default class Store {
       req.onupgradeneeded = (e) => {
         let store = e.currentTarget.result.createObjectStore(
             dbInfo.storeName, {keyPath: 'id', autoIncrement: true})
-         store.createIndex('page', 'page', {unique: true})
+         store.createIndex('url', 'url', {unique: true})
       }
 
       req.onsuccess = (e) => {
@@ -129,7 +129,7 @@ export default class Store {
     return new Promise((resolve, reject) => {
       self.ready().then(()=> {
         let dbInfo = self._dbInfo
-          , index = self.getObjectStore(dbInfo.storeName, 'readonly').index('page')
+          , index = self.getObjectStore(dbInfo.storeName, 'readonly').index('url')
           , req = index.openCursor()
           , iterationNumber = 1
 

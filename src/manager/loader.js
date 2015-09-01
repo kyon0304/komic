@@ -22,6 +22,12 @@ var Model = Backbone.Model.extend({
     return app.getModel('book').getCurrentImageUri(page)
   }
 
+, getCurrentImageUri: () => {
+    //XXX(kyon) how to call `getCurrentPage()`
+    let page = app.getModel('canvas').get('currentPage')
+    return app.getModel('book').getCurrentImageUri(page)
+  }
+
 , getBookTitle: () => {
     return app.getModel('book').get('name')
   }
@@ -80,7 +86,7 @@ class Loader {
         src = model.getImageUri(page)
         try {
           imageBlob = yield this.fetch({url: src})
-          this.storeImage(page, imageBlob)
+          this.storeImage(src, imageBlob)
         } catch(e) {
           page -= 1
           break
@@ -124,7 +130,7 @@ class Loader {
   }
 
   storeImage(key, val) {
-    let imageData = {'page': key, 'imageBlob':val}
+    let imageData = {'url': key, 'imageBlob':val}
       , self = this
 
     return self.store.setItem(imageData).then(() => {
@@ -135,7 +141,7 @@ class Loader {
   }
 
   storeCurrentImage(val) {
-    let key = this.model.getCurrentPage()
+    let key = this.model.getCurrentImageUri()
 
     if(this.presentPages.has(key)) { return }
 
@@ -150,7 +156,7 @@ class Loader {
 
   pickCachedImage(page) {
     let img = this.model.getImage(page)
-      , cached = this.presentPages.get(page)
+      , cached = this.presentPages.get(img.src)
 
     img.src = window.URL.createObjectURL(cached)
 
@@ -158,8 +164,8 @@ class Loader {
   }
 
   hasLoaded(key) {
-    let page = key||this.model.getCurrentPage()
-    return !!(this.presentPages.has(page))
+    let url = key||this.model.getCurrentImageUri()
+    return !!(this.presentPages.has(url))
   }
 }
 
