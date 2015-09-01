@@ -1,36 +1,66 @@
 import { Model } from 'backbone'
 import _ from 'mods/utils'
+import browser from 'mods/browser'
 
-export default Model.extend({
+const FIRST_PAGE = 0
+export default class extends Model {
+
+  @_.Memoize()
+  getImageType() {
+    var date = this.get('images')[FIRST_PAGE]
+      , src = date.web && date.web.src
+      , type = src['default']
+
+    if (browser.webp && src.webp) {
+      type = 'webp'
+    }
+
+    return type
+  }
+
+  getImage(index) {
+    var date = this.get('images')[index]
+      , web = date.web
+      , type = this.getImageType()
+
+    return {
+      ..._.pick(web, 'width', 'height')
+    , src: web.src[type]
+    }
+  }
+
+  getImages(){
+    return this.get('images').map((image, index) => { return this.getImage(index) })
+  }
 
   getBookCoverSize() {
-    var cover = this.get('images')[0]
+    var cover = this.getImage(FIRST_PAGE)
     return {
       width: Math.ceil(cover.width / cover.height * 220)
     , height: 220
     }
   }
 
-, getCanvasModelInfo() {
+  getCanvasModelInfo() {
     return {
       totalPage: this.get('images').length
     }
   }
 
-, getBookCoverImg() {
-    var cover = this.get('images')[0]
-    return Object.assign({
-      src: cover.src
-    }, this.getBookCoverSize())
+  getBookCoverImg() {
+    return {
+      ...this.getImage(FIRST_PAGE)
+    , ...this.getBookCoverSize()
+    }
   }
 
-, getCurrentImageUri(page) {
+  getCurrentImageUri(page) {
     var { src } = this.getCurrentImage(page)
     return src
   }
 
-, getNaturalAverageDiagonal() {
-    var images = this.get('images')
+  getNaturalAverageDiagonal() {
+    var images = this.getImages()
       , number = images.length
       , sum = _.reduce(images, (memo, image) => {
           var diagonal = _.rectangleDiagonal(image.width, image.height)
@@ -40,25 +70,25 @@ export default Model.extend({
     return sum / number
   }
 
-, getCurrentImage(page) {
-    return this.get('images')[page - 1]
+  getCurrentImage(page) {
+    return this.getImage(page - 1)
   }
 
-, getThumbnails() {
+  getThumbnails() {
     var imgs = this.get('images')
       , rootSrc = this.get('thumbnails').path
       , thumbHeight = this.get('thumbnails').height
     return (
-      this.get('images').map(function (img, idx) {
+      this.getImages().map(function (image, index) {
         return {
-          src: `${rootSrc}#${idx}`
-        , page: `${idx+1}`
+          src: `${rootSrc}#${index}`
+        , page: `${index+1}`
         , size: {
-            width: Math.ceil(img.width * thumbHeight / img.height)
+            width: Math.ceil(image.width * thumbHeight / image.height)
           , height: thumbHeight
           }
         }
       })
     )
   }
-})
+}

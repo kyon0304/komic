@@ -1,4 +1,4 @@
-export default {
+var browser = {
   // Copy form http://bit.ly/1hml8L9
   getVendorPropertyName: (prop) => {
     var el = document.createElement('div')
@@ -17,3 +17,17 @@ export default {
     }
   }
 }
+
+;(function asyncTestWebp() {
+  var uri = 'data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA='
+    , image = new Image()
+
+  image.onload = image.onerror = (e) => {
+    var result = e && e.type === 'load' ? image.width === 1 : false
+    browser.webp = result
+  }
+
+  image.src = uri
+}())
+
+export default browser
