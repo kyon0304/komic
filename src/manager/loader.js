@@ -22,9 +22,8 @@ var Model = Backbone.Model.extend({
     return app.getModel('book').getCurrentImageUri(page)
   }
 
-, getCurrentImageUri: () => {
-    //XXX(kyon) how to call `getCurrentPage()`
-    let page = app.getModel('canvas').get('currentPage')
+, getCurrentImageUri() {
+    let page = this.getCurrentPage()
     return app.getModel('book').getCurrentImageUri(page)
   }
 
