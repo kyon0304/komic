@@ -1,6 +1,4 @@
-const DB_NAME = 'komic'
-const DB_TABLE_NAME = 'book' //app.getModel('book').getBookTitle()
-const DB_VERSION = 1
+import _ from 'mods/utils'
 
 export default class Store {
   constructor(options) {
@@ -19,18 +17,18 @@ export default class Store {
 
     return new Promise((resolve, reject) => {
       let req = indexedDB.open(dbInfo.name, dbInfo.version)
-      req.onerror = (evt) => {
-        reject(evt.target.errorCode)
+      req.onerror = (e) => {
+        reject(e.target.errorCode)
       }
 
-      req.onupgradeneeded = (evt) => {
-        let store = evt.currentTarget.result.createObjectStore(
+      req.onupgradeneeded = (e) => {
+        let store = e.currentTarget.result.createObjectStore(
             dbInfo.storeName, {keyPath: 'id', autoIncrement: true})
          store.createIndex('page', 'page', {unique: true})
       }
 
-      req.onsuccess = (evt) => {
-        dbInfo.db = evt.target.result
+      req.onsuccess = (e) => {
+        dbInfo.db = e.target.result
         self._dbInfo = dbInfo
         resolve()
       }
@@ -84,15 +82,15 @@ export default class Store {
           , store = self.getObjectStore(dbInfo.storeName, 'readonly')
           , req = store.get(key)
 
-        req.onsuccess = (evt) => {
-          if (evt.target.result) {
-            resolve(evt.target.result.imageBlob)
+        req.onsuccess = (e) => {
+          if (e.target.result) {
+            resolve(e.target.result.imageBlob)
           } else {
             reject('not found')
           }
         }
-        req.onerror = (evt) => {
-          reject(evt.target.errorCode)
+        req.onerror = (e) => {
+          reject(req.error)
         }
       })
     })
@@ -142,7 +140,7 @@ export default class Store {
             let value = cursor.value
               , result = iterator(value, cursor.key, iterationNumber++)
 
-            if ( result !== void(0)) {
+            if (_.isUndefined(result)) {
               resolve(result)
             } else {
               cursor.continue()
@@ -160,7 +158,7 @@ export default class Store {
   }
 
   config(options) {
-    if (typeof(options) === 'object') {
+    if (_.isObject(options)) {
       if (this._ready !== null) {
         return false
       }
@@ -173,7 +171,7 @@ export default class Store {
         this._config[i] = options[i]
       }
       return true
-    } else if (typeof(options) === 'string') {
+    } else if (_.isString(options)) {
       return this._config[options]
     } else {
       return this._config

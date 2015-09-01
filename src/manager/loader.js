@@ -27,15 +27,13 @@ var Model = Backbone.Model.extend({
   }
 })
 
-
 function spawn(fn) {
   return co.wrap(fn)()
 }
 
 /**
- * TODO
- * 1. manage data in map, eg. override old data
- * 2. use indexDB or loacalStorage to save memory using
+ * TODO(kyon)
+ * use url instead page as key
  */
 class Loader {
   constructor (options) {
@@ -43,12 +41,22 @@ class Loader {
     this.THRESHOLD = 5
     this.xhr = undefined
     this.presentPages = new Map()
-    let config = {
-      'name': 'komic'
-    , 'version': 1
-    , 'storeName': 'book' //this.model.getBookTitle()
-    }
-    this.store = new Store(config)
+    //XXX(kyon) triggered twice
+    app.on('create: book', () => {
+      let config = {
+        'name': 'komic'
+      , 'version': 1
+      , 'storeName': this.model.getBookTitle()
+      }
+      this.store = new Store(config)
+      this.initPresentPages()
+    }, this)
+  }
+
+  initPresentPages() {
+    return this.store.iterate((val, key, iterationNumber) => {
+      this.presentPages.set(key, val)
+    })
   }
 
   preloadImages() {
@@ -96,8 +104,6 @@ class Loader {
       , src = model.getImageUri(page)
       , noop = function() {}
       , self = this
-
-    _.once(this.store.config({ 'storeName': encodeURI(this.model.getBookTitle()) }))
 
     if (this.hasLoaded(page)) {
       return Promise.resolve()
