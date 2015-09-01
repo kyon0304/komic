@@ -15,9 +15,7 @@ export default class Store {
         db: null
       }
 
-    for (let i in options) {
-      dbInfo[i] = options[i]
-    }
+    Object.assign(dbInfo, options)
 
     return new Promise((resolve, reject) => {
       let req = indexedDB.open(dbInfo.name, dbInfo.version)
@@ -167,7 +165,7 @@ export default class Store {
         return false
       }
 
-      for ( let i in options) {
+      for (let i in options) {
         if(i === 'storeName') {
           options[i] = options[i].replace(/\W/g, '_')
         }
