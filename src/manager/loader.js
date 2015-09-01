@@ -41,8 +41,7 @@ class Loader {
     this.THRESHOLD = 5
     this.xhr = undefined
     this.presentPages = new Map()
-    //XXX(kyon) triggered twice
-    app.on('create: book', () => {
+    app.on('create:book', () => {
       let config = {
         'name': 'komic'
       , 'version': 1
