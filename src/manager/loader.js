@@ -24,7 +24,7 @@ var Model = Backbone.Model.extend({
 
 , getCurrentImageUri() {
     let page = this.getCurrentPage()
-    return app.getModel('book').getCurrentImageUri(page)
+    return this.getImageUri(page)
   }
 
 , getBookTitle: () => {
@@ -58,8 +58,9 @@ class Loader {
   }
 
   initPresentPages() {
+    let self = this
     return this.store.iterate((val, key, iterationNumber) => {
-      this.presentPages.set(key, val)
+      self.presentPages.set(key, val)
     })
   }
 
@@ -74,13 +75,13 @@ class Loader {
         , imageBlob
 
       while (true) {
-        if (this.presentPages.has(page)) {
+        if (page > total || page < 1) break
+        if (page >= currentPage + this.THRESHOLD)  break
+
+        if (this.presentPages.has(model.getImageUri(page))) {
           page += 1
           continue
         }
-
-        if (page > total || page < 1) break
-        if (page >= currentPage + this.THRESHOLD)  break
 
         src = model.getImageUri(page)
         try {
@@ -114,7 +115,7 @@ class Loader {
     } else {
       return new Promise((resolve, reject) => {
         self.store.getItem(page).then((imageBlob) => {
-          self.presentPages.set(page, imageBlob)
+          self.presentPages.set(src, imageBlob)
           resolve()
         }, () => {
           self.fetch({ url: src, events: requestEvents })

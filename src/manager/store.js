@@ -133,14 +133,14 @@ export default class Store {
           , req = index.openCursor()
           , iterationNumber = 1
 
-        req.onsucess = () => {
+        req.onsuccess = () => {
           let cursor = req.result
 
           if (cursor) {
-            let value = cursor.value
+            let value = cursor.value.imageBlob
               , result = iterator(value, cursor.key, iterationNumber++)
 
-            if (_.isUndefined(result)) {
+            if (!_.isUndefined(result)) {
               resolve(result)
             } else {
               cursor.continue()
@@ -153,6 +153,7 @@ export default class Store {
         req.onerror = () => {
           reject(req.error)
         }
+
       })
     })
   }
