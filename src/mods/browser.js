@@ -19,6 +19,7 @@ var browser = {
 }
 
 ;(function asyncTestWebp() {
+  // 1 pixel webp.
   var uri = 'data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA='
     , image = new Image()
 
