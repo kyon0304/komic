@@ -19,7 +19,7 @@ $('body').prepend(appViewWrapper)
 
 bookModel.fetch({ url: '/content.json' })
   .done(() => {
-    app.trigger('create:book')
+    app.trigger('fetched:book')
     app.createModel('canvas')
     var router = Router.create({
       routes: routes

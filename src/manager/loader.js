@@ -45,8 +45,8 @@ class Loader {
     this.model = new Model()
     this.THRESHOLD = 5
     this.xhr = undefined
-    this.presentPages = new Map()
-    app.on('create:book', () => {
+    this.cachedPages = new Map()
+    app.on('fetched:book', () => {
       let config = {
         'name': 'komic'
       , 'version': 1
@@ -60,7 +60,7 @@ class Loader {
   initPresentPages() {
     let self = this
     return this.store.iterate((val, key, iterationNumber) => {
-      self.presentPages.set(key, val)
+      self.cachedPages.set(key, val)
     })
   }
 
@@ -78,7 +78,7 @@ class Loader {
         if (page > total || page < 1) break
         if (page >= currentPage + this.THRESHOLD)  break
 
-        if (this.presentPages.has(model.getImageUri(page))) {
+        if (this.cachedPages.has(model.getImageUri(page))) {
           page += 1
           continue
         }
@@ -115,7 +115,7 @@ class Loader {
     } else {
       return new Promise((resolve, reject) => {
         self.store.getItem(page).then((imageBlob) => {
-          self.presentPages.set(src, imageBlob)
+          self.cachedPages.set(src, imageBlob)
           resolve()
         }, () => {
           self.fetch({ url: src, events: requestEvents })
@@ -134,16 +134,16 @@ class Loader {
       , self = this
 
     return self.store.setItem(imageData).then(() => {
-      self.presentPages.set(key, val)
+      self.cachedPages.set(key, val)
     }, () => {
-      self.presentPages.set(key, val)
+      self.cachedPages.set(key, val)
     })
   }
 
   storeCurrentImage(val) {
     let key = this.model.getCurrentImageUri()
 
-    if(this.presentPages.has(key)) { return }
+    if(this.cachedPages.has(key)) { return }
 
     return this.storeImage(key, val)
   }
@@ -156,7 +156,7 @@ class Loader {
 
   pickCachedImage(page) {
     let img = this.model.getImage(page)
-      , cached = this.presentPages.get(img.src)
+      , cached = this.cachedPages.get(img.src)
 
     img.src = window.URL.createObjectURL(cached)
 
@@ -165,7 +165,7 @@ class Loader {
 
   hasLoaded(key) {
     let url = key||this.model.getCurrentImageUri()
-    return !!(this.presentPages.has(url))
+    return !!(this.cachedPages.has(url))
   }
 }
 
