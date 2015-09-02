@@ -7,8 +7,8 @@ export default class extends Model {
 
   @_.Memoize()
   getImageType() {
-    var date = this.get('images')[FIRST_PAGE]
-      , src = date.web && date.web.src
+    var data = this.get('images')[FIRST_PAGE]
+      , src = data.web && data.web.src
       , type = src['default']
 
     if (browser.webp && src.webp) {
@@ -19,8 +19,8 @@ export default class extends Model {
   }
 
   getImage(index) {
-    var date = this.get('images')[index]
-      , web = date.web
+    var data = this.get('images')[index]
+      , web = data.web
       , type = this.getImageType()
 
     return {
