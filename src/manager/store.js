@@ -76,20 +76,26 @@ export default class Store {
   getItem(key) {
     let self = this
 
+    console.log('get item enter', key)
+
     return new Promise((resolve, reject) => {
       self.ready().then(() => {
         let dbInfo = self._dbInfo
-          , store = self.getObjectStore(dbInfo.storeName, 'readonly')
+          , store = self.getObjectStore(dbInfo.storeName, 'readonly').index('url')
           , req = store.get(key)
 
+        console.log('ready', req)
         req.onsuccess = (e) => {
           if (e.target.result) {
+            console.log('success')
             resolve(e.target.result.imageBlob)
           } else {
+            console.log('fail')
             reject('not found')
           }
         }
         req.onerror = (e) => {
+          console.log(req.error)
           reject(req.error)
         }
       })

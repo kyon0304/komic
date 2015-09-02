@@ -6,6 +6,8 @@ import Backbone from 'backbone'
 import _ from 'mods/utils'
 import loader from 'manager/loader'
 
+import VerticalAlignMiddle from 'widgets/vertical_align_middle'
+
 const win = $(window)
     , MOUSE_RIGHT_BUTTON = 2
     , SCROLL_DURATION = 230
@@ -95,7 +97,7 @@ export default class extends React.Component {
     this.guid = _.uniqueId()
     this.manager = this.props.manager
     this.model = new Model({ manager: this.manager })
-    this.state = { display: true }
+    this.state = { display: true, loaded: false, url: undefined }
   }
 
   componentWillMount() {
@@ -196,9 +198,27 @@ export default class extends React.Component {
   }
 
   render() {
+    console.log('loaded state', this.state.loaded)
+    let self = this
+
+    if (this.state.loaded) {
+      return renderWithImage()
+    } else {
+      loader.pickCachedImage(currentPage).then((src) => {
+        console.log('picked image', src)
+        //img.src = src
+        self.setState({ loaded: true, url: src })
+      })
+      return renderWithLoading()
+    }
+  }
+
+  renderWithImage() {
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
-      , img = loader.pickCachedImage(currentPage)
+      , img = book.getCurrentImage(currentPage)
+
+    img.src = this.state.url
 
     return (
       <img { ...img }
@@ -213,6 +233,18 @@ export default class extends React.Component {
         onLoad={ ::loader.preloadImages}
         onContextMenu={ this.handleContextMenu }
         />
+    )
+  }
+
+  renderWithLoading() {
+    return (
+      <div className="canvas">
+        <VerticalAlignMiddle style={
+          { width: '100%', height: '100%', textAlign: 'center' }
+          }>
+          载入中
+        </VerticalAlignMiddle>
+      </div>
     )
   }
 }

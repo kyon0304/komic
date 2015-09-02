@@ -129,8 +129,10 @@ export default class extends React.Component {
           })
         }
       }})
-      .then(() => {
-        this.setState({ loadingState: LoadingStates.LOADED })
+      .then((promise) => {
+        promise.then(() => {
+          this.setState({ loadingState: LoadingStates.LOADED })
+        })
       })
     return this.renderWithLoading()
   }
