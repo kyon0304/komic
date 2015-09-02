@@ -6,20 +6,20 @@ import request from 'mods/request'
 import _ from 'mods/utils'
 
 var Model = Backbone.Model.extend({
-  getImage: (page) => {
-    return app.getModel('book').getCurrentImage(page)
+  getImage: () => {
+    return app.getModel('book').getCurrentImage()
   }
 
 , getCurrentPage: () => {
-    return app.getModel('canvas').get('currentPage')
+    return app.getModel('book').get('currentPage')
   }
 
 , getTotalPage: () => {
-    return app.getModel('canvas').get('totalPage')
+    return app.getModel('book').get('totalPage')
   }
 
-, getImageUri: (page) => {
-    return app.getModel('book').getCurrentImageUri(page)
+, getImageUri: () => {
+    return app.getModel('book').getCurrentImageUri()
   }
 
 , getCurrentImageUri() {

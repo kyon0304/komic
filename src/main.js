@@ -12,15 +12,15 @@ $(document).on('click', 'a[href="#"]', (e) => {
   e.preventDefault()
 })
 
-var bookModel = app.createModel('book')
+var canvasModel = app.createModel('canvas')
+  , bookModel = app.createModel('book')
   , appViewWrapper = $('<div>', {'class': 'react-app-wrapper'})
 
 $('body').prepend(appViewWrapper)
 
-bookModel.fetch({ url: './content.json' })
+bookModel.fetchContent({ url: './content.json' })
   .done(() => {
     app.trigger('fetched:book')
-    app.createModel('canvas')
     var router = Router.create({
       routes: routes
     , location: Router.HashLocation

@@ -138,9 +138,9 @@ export default class extends React.Component {
   }
 
   turnPage(direction) {
-    var canvas = app.getModel('canvas')
+    var book = app.getModel('book')
 
-    canvas.trigger('turn:page', { direction })
+    book.trigger('turn:page', { direction })
   }
 
   turnPrevPage() {
@@ -197,12 +197,13 @@ export default class extends React.Component {
 
   render() {
     var book = app.getModel('book')
+      , canvas = app.getModel('canvas')
       , currentPage = app.getModel('canvas').get('currentPage')
-      , { width, height } = book.getCurrentImage(currentPage)
+      , { width, height } = book.getCurrentImage()
 
     return (
       <img
-        src={ window.URL.createObjectURL(this.props.blob) }
+        src={ this.props.src }
         width={ width }
         height={ height }
         key={ _.uniqueId() }

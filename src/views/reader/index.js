@@ -17,16 +17,19 @@ export default class extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    var params = nextProps.params
-      , canvas = app.getModel('canvas')
-    if (params && params.page) {
-      canvas.setCurrentPage(params.page)
-    }
+    this.setCurrentPage(nextProps)
+  }
+
+
+  setCurrentPage(props) {
+    var book = app.getModel('book')
+      , page = props.params && +props.params.page
+      , splitedIndex = +props.query.splitedIndex || 0
+    book.setCurrentPage({ page: page, splitedIndex: splitedIndex })
   }
 
   componentWillMount() {
-    var canvas = app.getModel('canvas')
-    canvas.setCurrentPage(+this.props.params.page)
+    this.setCurrentPage(this.props)
     app.on('toggle:thumbview', this.toggleThumbview, this)
   }
 

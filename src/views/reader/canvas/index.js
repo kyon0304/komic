@@ -39,37 +39,42 @@ export default class extends React.Component {
   }
 
   componentWillMount() {
-    var canvas = app.getModel('canvas')
-    canvas
+    var book = app.getModel('book')
+    book
       .on('turn:page', ::this.showTurnPageTip)
       .on('turn:page', ::this.transitionToPage)
   }
 
   componentWillUnmount() {
-    var canvas = app.getModel('canvas')
-    canvas
+    var book = app.getModel('book')
+    book
       .off('turn:page', ::this.showTurnPageTip)
       .off('turn:page', ::this.transitionToPage)
   }
 
   showTurnPageTip({ direction }) {
-    var canvas = app.getModel('canvas')
+    var book = app.getModel('book')
 
     app.trigger('close:tip')
 
-    if (canvas.currentIsFirstPage() && direction === 'prevPage') {
+    if (book.currentIsFirstPage() && direction === 'prevPage') {
       app.trigger('open:tip', { text: '目前已经是第一页' })
-    } else if (canvas.currentIsLastPage() && direction === 'nextPage') {
+    } else if (book.currentIsLastPage() && direction === 'nextPage') {
       app.trigger('open:tip', { text: '目前已经是最后一页' })
     }
   }
 
   transitionToPage({ direction }) {
     var router = app.get('router')
+      , book = app.getModel('book')
       , canvas = app.getModel('canvas')
 
-    canvas.turnPage({ direction })
-    router.transitionTo('page', { page: canvas.get('currentPage') })
+    book.turnPage({ direction })
+    router.transitionTo(
+      'page'
+    , { page: book.get('currentPage') }
+    , canvas.get('autoSplit') && { splitedIndex: book.get('splitedIndex') }
+    )
   }
 
   scrollHandler(e) {
@@ -115,9 +120,35 @@ export default class extends React.Component {
         onMouseMove= { ::this.mouseMoveHandle }
         >
         <CanvasImage manager={ this.imageManger }
-          blob={ this.state.imageBlob } />
+          src={ this.state.imageSrc } />
       </div>
     )
+  }
+
+  cropImageWhenAutoSplit(imageBlob) {
+    return new Promise((resolve, reject) => {
+      var book = app.getModel('book')
+        , canvas = app.getModel('canvas')
+        , image = book.getCurrentImage()
+        , { naturalWidth, naturalHeight} = image
+        , { width, height, positionX } = image
+
+      if (!canvas.get('autoSplit') || !image.splited) {
+        return resolve(window.URL.createObjectURL(imageBlob))
+      }
+
+      var croppingCanvas = document.createElement("canvas")
+      croppingCanvas.width = width
+      croppingCanvas.height = height
+      var image = new Image()
+      image.src = window.URL.createObjectURL(imageBlob)
+      image.onerror = reject
+      image.onload = function() {
+        croppingCanvas.getContext('2d')
+          .drawImage(image, -positionX, 0, naturalWidth, naturalHeight)
+        resolve(croppingCanvas.toDataURL())
+      }
+    })
   }
 
   renderAndLoadImage() {
@@ -130,10 +161,11 @@ export default class extends React.Component {
           })
         }
       }})
-      .then((imageBlob) => {
+      .then(this.cropImageWhenAutoSplit)
+      .then((blobUriOrDataUri) => {
         this.setState({
           loadingState: LoadingStates.LOADED
-        , imageBlob: imageBlob
+        , imageSrc: blobUriOrDataUri
         })
       })
     return this.renderWithLoading()
