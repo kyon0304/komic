@@ -156,25 +156,4 @@ export default class Store {
       })
     })
   }
-
-  config(options) {
-    if (_.isObject(options)) {
-      if (this._ready !== null) {
-        return false
-      }
-
-      for (let i in options) {
-        if(i === 'storeName') {
-          options[i] = options[i].replace(/\W/g, '_')
-        }
-
-        this._config[i] = options[i]
-      }
-      return true
-    } else if (_.isString(options)) {
-      return this._config[options]
-    } else {
-      return this._config
-    }
-  }
 }
