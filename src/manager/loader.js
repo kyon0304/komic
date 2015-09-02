@@ -110,11 +110,11 @@ class Loader {
       , noop = function() {}
       , self = this
 
-    if (this.hasLoaded(page)) {
+    if (this.hasLoaded(src)) {
       return Promise.resolve()
     } else {
       return new Promise((resolve, reject) => {
-        self.store.getItem(page).then((imageBlob) => {
+        self.store.getItem(src).then((imageBlob) => {
           self.cachedPages.set(src, imageBlob)
           resolve()
         }, () => {
