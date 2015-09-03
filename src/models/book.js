@@ -45,8 +45,7 @@ export default Model.extend({
   }
 
 , getThumbnails() {
-    var imgs = this.get('images')
-      , rootSrc = this.get('thumbnails').path
+    var rootSrc = this.get('thumbnails').path
       , thumbHeight = this.get('thumbnails').height
     return (
       this.get('images').map(function (img, idx) {
@@ -60,5 +59,13 @@ export default Model.extend({
         }
       })
     )
+  }
+
+, getTitle() {
+    return this.get('name')
+  }
+
+, getUUID() {
+    return this.get('content_json_uuid')
   }
 })

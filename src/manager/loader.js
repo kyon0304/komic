@@ -28,7 +28,11 @@ var Model = Backbone.Model.extend({
   }
 
 , getBookTitle: () => {
-    return app.getModel('book').get('name')
+    return app.getModel('book').getTitle()
+  }
+
+, getUUID: () => {
+    return app.getModel('book').getUUID()
   }
 })
 
@@ -47,9 +51,26 @@ class Loader {
     this.xhr = undefined
     this.cachedPages = new Map()
     app.on('fetched:book', () => {
+      let uuid = this.model.getUUID()
+        , version
+        , versionTable = new Map(this.getFromLocalStorage())
+
+      if (!versionTable) {
+        version = 1
+        versionTable = new Map()
+        versionTable.set(uuid, version)
+        this.saveToLocalStorage(versionTable)
+      } else if (versionTable.has(uuid)) {
+        version = versionTable.get(uuid)
+      } else {
+        version = versionTable.size + 1
+        versionTable.set(uuid, version)
+        this.saveToLocalStorage(versionTable)
+      }
+
       let config = {
         'name': 'komic'
-      , 'version': 1
+      , 'version': version
       , 'storeName': this.model.getBookTitle()
       }
       this.store = new Store(config)
@@ -62,6 +83,15 @@ class Loader {
     return this.store.iterate((val, key, iterationNumber) => {
       self.cachedPages.set(key, val)
     })
+  }
+
+  saveToLocalStorage(versionTable) {
+    localStorage.setItem('manager/loader'
+      , JSON.stringify(versionTable.toJSON()))
+  }
+
+  getFromLocalStorage() {
+    return JSON.parse(localStorage.getItem('manager/loader'))
   }
 
   preloadImages() {
