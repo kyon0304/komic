@@ -43,7 +43,7 @@ export default class {
   }
 
   setScale(scale) {
-    this.scale = _.clamp(scale, [0.3, 2])
+    this.scale = _.clamp(scale, [0.1, 2])
     this.width = this.naturalWidth * this.scale
     this.height = this.naturalHeight * this.scale
     this.setBoundaryInfo()
