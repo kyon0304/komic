@@ -33,9 +33,14 @@ export default class extends React.Component {
 
   componentWillReceiveProps() {
     var { READY, LOADED } = LoadingStates
-    this.state = {
-      loadingState: (loader.hasLoaded()) ? LOADED : READY
-    }
+      , self = this
+
+    this.state = { loadingState: READY }
+    loader.hasLoaded().then(() => {
+      self.state = { loadingState: LOADED}
+    }, () =>{
+      self.state = { loadingState: READY }
+    })
   }
 
   componentWillMount() {
@@ -129,10 +134,8 @@ export default class extends React.Component {
           })
         }
       }})
-      .then((promise) => {
-        promise.then(() => {
-          this.setState({ loadingState: LoadingStates.LOADED })
-        })
+      .then(() => {
+        this.setState({ loadingState: LoadingStates.LOADED })
       })
     return this.renderWithLoading()
   }

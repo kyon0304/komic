@@ -100,6 +100,10 @@ export default class extends React.Component {
     this.state = { display: true, loaded: false, url: undefined }
   }
 
+  componentWillReceiveProps() {
+    this.state = { loaded: false}
+  }
+
   componentWillMount() {
     var canvas = app.getModel('canvas')
     canvas.on('change:scalingMethod', this.scalingMethodChanged, this)
@@ -197,26 +201,25 @@ export default class extends React.Component {
     this::ContextMenuHandlers[canvas.get('turnpageMethod')](e)
   }
 
+  //XXX(kyon) how to render async data
   render() {
-    console.log('loaded state', this.state.loaded)
     let self = this
+      , currentPage = app.getModel('canvas').get('currentPage')
 
     if (this.state.loaded) {
-      return renderWithImage()
+      return this.renderWithImage()
     } else {
       loader.pickCachedImage(currentPage).then((src) => {
-        console.log('picked image', src)
-        //img.src = src
         self.setState({ loaded: true, url: src })
       })
-      return renderWithLoading()
+      return this.renderWithLoading()
     }
   }
 
   renderWithImage() {
     var book = app.getModel('book')
       , currentPage = app.getModel('canvas').get('currentPage')
-      , img = book.getCurrentImage(currentPage)
+      , img = { ...book.getCurrentImage(currentPage) }
 
     img.src = this.state.url
 

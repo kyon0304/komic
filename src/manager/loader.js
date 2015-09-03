@@ -32,17 +32,11 @@ var Model = Backbone.Model.extend({
   }
 })
 
-function spawn(fn) {
-  return co.wrap(fn)()
-}
-
 class Loader {
   constructor (options) {
     this.model = new Model()
     this.THRESHOLD = 5
     this.xhr = undefined
-    this.cachedPages = new Map()
-    this.cachedPages = []
     app.on('fetched:book', () => {
       let config = {
         'name': 'komic'
@@ -50,16 +44,7 @@ class Loader {
       , 'storeName': this.model.getBookTitle()
       }
       this.store = new Store(config)
-      this.initPresentPages()
     }, this)
-  }
-
-  initPresentPages() {
-    let self = this
-    return this.store.iterate((val, key, iterationNumber) => {
-      self.cachedPages.push(key)
-      //self.cachedPages.set(key, val)
-    })
   }
 
   preloadImages() {
@@ -68,32 +53,31 @@ class Loader {
       , total = model.getTotalPage()
       , currentPage = model.getCurrentPage()
       , start = currentPage + 1
-      , end = start + this.THRESHOLD > total ? total : start + this.THRESOLD
-      , src = model.getImageUri(page)
-      , pages = _.range(start, end + 1)
+      , end = start + this.THRESHOLD > total ? total + 1 : start + this.THRESHOLD
+      , pages = _.range(start, end)
       , urls = pages.map((val) => { return model.getImageUri(val) })
-      , cached
+      , cachedUrls = []
+      , self = this
 
-    this.iterate((val, key) => {
+    this.store.iterate((val, key) => {
       cachedUrls.push(key)
-      console.log('cached urls', cachedUrls)
     }).then(() => {
-      return _.intersection(cachedUrls, urls)
+      return _.difference(urls, cachedUrls)
     }).then((preloadUrls) => {
-      console.log('preload urls', preloadUrls)
-      spawn(function*(preloadUrls) {
+      co.wrap(function* gen(preloadURLs) {
         let imageBlob
 
-        while(preloadUrls.length) {
+        while(preloadURLs.length) {
+          let src = preloadURLs[0]
           try {
             imageBlob = yield self.fetch({url: src})
             self.storeImage(src, imageBlob)
-            preloadUrls.splice(_.indexof(preloadUrls, src))
+            preloadURLs.splice(0, 1)
           } catch(e) {
             break
           }
         }
-      })
+      })(preloadUrls)
     })
   }
 
@@ -111,12 +95,10 @@ class Loader {
       , self = this
 
     return this.hasLoaded(src).then(() => {
-      return new Promise.resolve()
+      return Promise.resolve()
     }, () => {
       return new Promise((resolve, reject) => {
         self.store.getItem(src).then((imageBlob) => {
-          //self.cachedPages.set(src, imageBlob)
-          self.cachedPages.push(src)
           resolve()
         }, () => {
           self.fetch({ url: src, events: requestEvents })
@@ -132,24 +114,17 @@ class Loader {
 
   storeImage(key, val) {
     let imageData = {'url': key, 'imageBlob':val}
-      , self = this
 
-    return self.store.setItem(imageData).then(() => {
-      //self.cachedPages.set(key, val)
-      self.cachedPages.push(key)
-    }, () => {
-      self.cachedPages.push(key)
-      //self.cachedPages.set(key, val)
-    })
+    return this.store.setItem(imageData)
   }
 
   storeCurrentImage(val) {
     let key = this.model.getCurrentImageUri()
+      , self = this
 
-    if( key in this.cachedPages) { return }
-    //if(this.cachedPages.has(key)) { return }
-
-    return this.storeImage(key, val)
+    return this.hasLoaded(key).catch(() => {
+      return self.storeImage(key, val)
+    })
   }
 
   stopLoading() {
@@ -161,11 +136,8 @@ class Loader {
   pickCachedImage(page) {
     let url = this.model.getImageUri(page)
 
-    console.log('pick enter', page, url)
-
     return (
       this.store.getItem(url).then((cached) => {
-        console.log('got item', cached)
         return window.URL.createObjectURL(cached)
       })
     )
@@ -174,7 +146,7 @@ class Loader {
   hasLoaded(key) {
     let url = key||this.model.getCurrentImageUri()
     return new Promise((resolve, reject) => {
-      this.store.getItem(key).then(reject, resolve)
+      this.store.getItem(url).then(resolve, reject)
     })
   }
 }
