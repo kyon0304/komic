@@ -62,7 +62,7 @@ class Loader {
       let config = {
         'name': 'komic'
       , 'version': version
-      , 'storeName': this.model.getBookTitle()
+      , 'storeName': this.model.getBookTitle()+uuid
       }
       this.store = new Store(config)
     }, this)
