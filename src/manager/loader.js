@@ -173,7 +173,7 @@ class Loader {
   storeCurrentImage(val) {
     let key = this.model.getCurrentImageUri()
 
-    if(this.cachedPages.has(key)) { return }
+    if(this.cachedPages.has(key)) { return Promise.resolve() }
 
     return this.storeImage(key, val)
   }
