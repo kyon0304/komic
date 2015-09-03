@@ -17,7 +17,7 @@ var bookModel = app.createModel('book')
 
 $('body').prepend(appViewWrapper)
 
-bookModel.fetch({ url: '/content.json' })
+bookModel.fetch({ url: './content.json' })
   .done(() => {
     app.trigger('fetched:book')
     app.createModel('canvas')
