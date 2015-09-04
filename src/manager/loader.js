@@ -1,7 +1,9 @@
 import co from 'co'
 
 import app from 'app'
+import Store from './store'
 import request from 'mods/request'
+import _ from 'mods/utils'
 
 var Model = Backbone.Model.extend({
   getImage: (page) => {
@@ -19,57 +21,94 @@ var Model = Backbone.Model.extend({
 , getImageUri: (page) => {
     return app.getModel('book').getCurrentImageUri(page)
   }
+
+, getCurrentImageUri() {
+    let page = this.getCurrentPage()
+    return this.getImageUri(page)
+  }
+
+, getBookTitle: () => {
+    return app.getModel('book').getTitle()
+  }
+
+, getUUID: () => {
+    return app.getModel('book').getUUID()
+  }
 })
 
-
-function spawn(fn) {
-  return co.wrap(fn)()
-}
-
-/**
- * TODO
- * 1. manage data in map, eg. override old data
- * 2. use indexDB or loacalStorage to save memory using
- */
 class Loader {
   constructor (options) {
-    this.map = new Map()
     this.model = new Model()
     this.THRESHOLD = 5
     this.xhr = undefined
+    app.on('fetched:book', () => {
+      let uuid = this.model.getUUID()
+        , version
+        , versionTable = new Map(this.getFromLocalStorage())
+
+      if (!versionTable) {
+        version = 1
+        versionTable = new Map()
+        versionTable.set(uuid, version)
+        this.saveToLocalStorage(versionTable)
+      } else if (versionTable.has(uuid)) {
+        version = versionTable.get(uuid)
+      } else {
+        version = versionTable.size + 1
+        versionTable.set(uuid, version)
+        this.saveToLocalStorage(versionTable)
+      }
+
+      let config = {
+        'name': 'komic'
+      , 'version': version
+      , 'storeName': this.model.getBookTitle()+uuid
+      }
+      this.store = new Store(config)
+    }, this)
+  }
+
+  saveToLocalStorage(versionTable) {
+    localStorage.setItem('manager/loader'
+      , JSON.stringify(versionTable.toJSON()))
+  }
+
+  getFromLocalStorage() {
+    return JSON.parse(localStorage.getItem('manager/loader'))
   }
 
   preloadImages() {
     this.stopLoading()
-    spawn(function*() {
-      let model = this.model
-        , currentPage = model.getCurrentPage()
-        , page = currentPage + 1
-        , total = model.getTotalPage()
-        , src
-        , imageBlob
+    let model = this.model
+      , total = model.getTotalPage()
+      , currentPage = model.getCurrentPage()
+      , start = currentPage + 1
+      , end = start + this.THRESHOLD > total ? total + 1 : start + this.THRESHOLD
+      , pages = _.range(start, end)
+      , urls = pages.map((val) => { return model.getImageUri(val) })
+      , cachedUrls = []
+      , self = this
 
-      while (true) {
-        if (this.map.has(page)) {
-          page += 1
-          continue
+    this.store.iterate((val, key) => {
+      cachedUrls.push(key)
+    }).then(() => {
+      return _.difference(urls, cachedUrls)
+    }).then((preloadUrls) => {
+      co.wrap(function* gen(preloadURLs) {
+        let imageBlob
+
+        while(preloadURLs.length) {
+          let src = preloadURLs[0]
+          try {
+            imageBlob = yield self.fetch({url: src})
+            self.storeImage(src, imageBlob)
+            preloadURLs.splice(0, 1)
+          } catch(e) {
+            break
+          }
         }
-
-        if (page > total || page < 1) break
-        if (page >= currentPage + this.THRESHOLD)  break
-
-        src = model.getImageUri(page)
-        try {
-          imageBlob = yield this.fetch({url: src})
-          this.map.set(page, imageBlob)
-        } catch(e) {
-          page -= 1
-          break
-        }
-
-        page += 1
-      }
-    }.bind(this))
+      })(preloadUrls)
+    })
   }
 
   fetch(options, ...args) {
@@ -79,31 +118,43 @@ class Loader {
 
   loadCurrentImage({ requestEvents }) {
     this.stopLoading()
-    let map = this.map
-      , model = this.model
+    let model = this.model
       , page = model.getCurrentPage()
       , src = model.getImageUri(page)
       , noop = function() {}
+      , self = this
 
-    if (this.hasLoaded(page)) {
+    return this.hasLoaded(src).then(() => {
       return Promise.resolve()
-    } else {
-      return (this.fetch({ url: src, events: requestEvents })
-        .then((imageBlob) => {
-          this.storeCurrentImage(imageBlob)
-        }, noop))
-    }
+    }, () => {
+      return new Promise((resolve, reject) => {
+        self.store.getItem(src).then((imageBlob) => {
+          resolve()
+        }, () => {
+          self.fetch({ url: src, events: requestEvents })
+            .then((imageBlob) => {
+               self.storeCurrentImage(imageBlob).then(() => {
+                 resolve()
+               }, noop)
+            })
+        })
+      })
+    })
   }
 
-  store(key, val) {
-    if (!this.map.has(key)) {
-      this.map.set(key, val)
-    }
+  storeImage(key, val) {
+    let imageData = {'url': key, 'imageBlob':val}
+
+    return this.store.setItem(imageData)
   }
 
   storeCurrentImage(val) {
-    let page = this.model.getCurrentPage()
-    this.store(page, val)
+    let key = this.model.getCurrentImageUri()
+      , self = this
+
+    return this.hasLoaded(key).catch(() => {
+      return self.storeImage(key, val)
+    })
   }
 
   stopLoading() {
@@ -113,16 +164,18 @@ class Loader {
   }
 
   pickCachedImage(page) {
-    let img = this.model.getImage(page)
-      , cached = this.map.get(page)
+    let url = this.model.getImageUri(page)
 
-    img.src = window.URL.createObjectURL(cached)
-    return img
+    return (
+      this.store.getItem(url).then((cached) => {
+        return window.URL.createObjectURL(cached)
+      })
+    )
   }
 
   hasLoaded(key) {
-    let page = key||this.model.getCurrentPage()
-    return !!(this.map.has(page))
+    let url = key||this.model.getCurrentImageUri()
+    return this.store.getItem(url)
   }
 }
 

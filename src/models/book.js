@@ -43,7 +43,7 @@ export default class extends Model {
 
   getCanvasModelInfo() {
     return {
-      totalPage: this.get('images').length
+      totalPage: this.getImages().length
     }
   }
 
@@ -75,8 +75,7 @@ export default class extends Model {
   }
 
   getThumbnails() {
-    var imgs = this.get('images')
-      , rootSrc = this.get('thumbnails').path
+    var rootSrc = this.get('thumbnails').path
       , thumbHeight = this.get('thumbnails').height
     return (
       this.getImages().map(function (image, index) {
@@ -90,5 +89,13 @@ export default class extends Model {
         }
       })
     )
+  }
+
+  getTitle() {
+    return this.get('name')
+  }
+
+  getUUID() {
+    return this.get('content_json_uuid')
   }
 }
