@@ -125,16 +125,16 @@ class Loader {
       , self = this
 
     return this.hasLoaded(src).then(() => {
-      return Promise.resolve()
+      return this.pickCachedImage(page)
     }, () => {
       return new Promise((resolve, reject) => {
         self.store.getItem(src).then((imageBlob) => {
-          resolve()
+          resolve(imageBlob)
         }, () => {
           self.fetch({ url: src, events: requestEvents })
             .then((imageBlob) => {
                self.storeCurrentImage(imageBlob).then(() => {
-                 resolve()
+                 resolve(imageBlob)
                }, noop)
             })
         })
@@ -166,11 +166,7 @@ class Loader {
   pickCachedImage(page) {
     let url = this.model.getImageUri(page)
 
-    return (
-      this.store.getItem(url).then((cached) => {
-        return window.URL.createObjectURL(cached)
-      })
-    )
+    return this.store.getItem(url)
   }
 
   hasLoaded(key) {

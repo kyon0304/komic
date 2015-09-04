@@ -36,11 +36,6 @@ export default class extends React.Component {
       , self = this
 
     this.state = { loadingState: READY }
-    loader.hasLoaded().then(() => {
-      self.state = { loadingState: LOADED}
-    }, () =>{
-      self.state = { loadingState: READY }
-    })
   }
 
   componentWillMount() {
@@ -119,7 +114,8 @@ export default class extends React.Component {
         onWheel={ ::this.scrollHandler }
         onMouseMove= { ::this.mouseMoveHandle }
         >
-        <CanvasImage manager={ this.imageManger } />
+        <CanvasImage manager={ this.imageManger }
+          blob={ this.state.imageBlob } />
       </div>
     )
   }
@@ -134,8 +130,11 @@ export default class extends React.Component {
           })
         }
       }})
-      .then(() => {
-        this.setState({ loadingState: LoadingStates.LOADED })
+      .then((imageBlob) => {
+        this.setState({
+          loadingState: LoadingStates.LOADED
+        , imageBlob: imageBlob
+        })
       })
     return this.renderWithLoading()
   }
