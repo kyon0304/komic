@@ -175,9 +175,7 @@ class Loader {
 
   hasLoaded(key) {
     let url = key||this.model.getCurrentImageUri()
-    return new Promise((resolve, reject) => {
-      this.store.getItem(url).then(resolve, reject)
-    })
+    return this.store.getItem(url)
   }
 }
 
