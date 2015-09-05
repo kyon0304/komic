@@ -141,11 +141,9 @@ export default class extends Model {
       && (!currentImage.splited || currentImage.splitedIndex === 0))
   }
 
-  getImage({ page, index, splitedIndex = 0 }) {
+  getImage({ page, splitedIndex = 0 }) {
     var images = this.getImages()
-    if (!_.isUndefined(page)) {
-      index = page - 1
-    }
+      , index = page - 1
 
     return _.find(images, (image) => {
       return (image.index === index
