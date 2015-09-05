@@ -141,7 +141,7 @@ export default class extends Model {
       && (!currentImage.splited || currentImage.splitedIndex === 0))
   }
 
-  getImage({ page, index, splitedIndex }) {
+  getImage({ page, index, splitedIndex = 0 }) {
     var images = this.getImages()
     if (!_.isUndefined(page)) {
       index = page - 1
@@ -153,6 +153,11 @@ export default class extends Model {
         || image.splitedIndex === splitedIndex )
       )
     })
+  }
+
+  getImageUri(...args) {
+    var image = this.getImage(...args)
+    return image.src
   }
 
   getImages() {
