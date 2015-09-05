@@ -193,7 +193,7 @@ export default class extends Model {
   }
 
   getNaturalAverageDiagonal() {
-    var images = this.content.get('images')
+    var images = this.getImages()
       , number = images.length
       , sum = _.reduce(images, (memo, image) => {
           var diagonal = _.rectangleDiagonal(image.width, image.height)
