@@ -59,7 +59,7 @@ export default class extends React.Component {
     return (
       <li className={ klass } key={ index }>
         <ThumbViewLink to="page" params={{ page: page }}
-          query={ canvas.get('autoSplit') && _.pick(thumb, 'splitedIndex') }
+          query={ canvas.get('autoSplit') ? _.pick(thumb, 'splitedIndex') : null }
           ref={ isCurrent ? 'current' : null }
           className="thumb" { ...viewBoxSize }>
           <svg className="thumb" { ...viewBoxSize }
