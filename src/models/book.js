@@ -18,7 +18,7 @@ class Content extends Model {
     return type
   }
 
-  decorateImage(image, index) {
+  wrapImage(image, index) {
     var web = image.web
       , {width, height} = _.pick(web, 'width', 'height')
 
@@ -36,7 +36,7 @@ class Content extends Model {
   @_.Memoize()
   unsplitedImages() {
     var images = this.get('images')
-    return images.map(::this.decorateImage)
+    return images.map(::this.wrapImage)
   }
 
   @_.Memoize()
@@ -52,7 +52,7 @@ class Content extends Model {
       , splitedImages = []
 
     images.forEach((image, index) => {
-      image = this.decorateImage(image, index)
+      image = this.wrapImage(image, index)
       if (image.width > beSplitedBreakpoint) {
         var halfWidth = image.width / 2
           , halfWidthImage = {
