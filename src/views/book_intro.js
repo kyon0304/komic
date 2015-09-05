@@ -19,7 +19,7 @@ class BookCover extends React.Component {
           <li>
             <VertialAlignMiddle>
               <div style={ Object.assign(model.getBookCoverSize(), {textAlign: 'center'}) }>
-                <Link to="reader" params={{page: "0"}} className="btn btn-read">阅 读</Link>
+                <Link to="reader" params={{page: "1"}} className="btn btn-read">阅 读</Link>
               </div>
             </VertialAlignMiddle>
           </li>
@@ -42,7 +42,7 @@ class BookCover extends React.Component {
 
 class BookIntroDetail extends React.Component {
   render() {
-    var model = this.props.model
+    var model = this.props.model.content
     return (
       <div className="book-intro-detail">
         <h1>{ model.get('name') }</h1>
