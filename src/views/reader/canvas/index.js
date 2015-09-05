@@ -35,7 +35,7 @@ export default class extends React.Component {
     var { READY, LOADED } = LoadingStates
       , self = this
 
-    this.state = { loadingState: READY }
+    this.state = { loadingState: READY, percent: 0 }
   }
 
   componentWillMount() {
