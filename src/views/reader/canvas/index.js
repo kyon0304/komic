@@ -146,7 +146,7 @@ export default class extends React.Component {
       image.onload = function() {
         croppingCanvas.getContext('2d')
           .drawImage(image, -positionX, 0, naturalWidth, naturalHeight)
-        resolve(croppingCanvas.toDataURL())
+        resolve(croppingCanvas.toDataURL('image/jpeg'))
       }
     })
   }
