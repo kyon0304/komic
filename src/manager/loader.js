@@ -5,44 +5,13 @@ import Store from './store'
 import request from 'mods/request'
 import _ from 'mods/utils'
 
-var Model = Backbone.Model.extend({
-  getImage: (page) => {
-    return app.getModel('book').getCurrentImage(page)
-  }
-
-, getCurrentPage: () => {
-    return app.getModel('canvas').get('currentPage')
-  }
-
-, getTotalPage: () => {
-    return app.getModel('canvas').get('totalPage')
-  }
-
-, getImageUri: (page) => {
-    return app.getModel('book').getCurrentImageUri(page)
-  }
-
-, getCurrentImageUri() {
-    let page = this.getCurrentPage()
-    return this.getImageUri(page)
-  }
-
-, getBookTitle: () => {
-    return app.getModel('book').getTitle()
-  }
-
-, getUUID: () => {
-    return app.getModel('book').getUUID()
-  }
-})
-
 class Loader {
   constructor (options) {
-    this.model = new Model()
     this.THRESHOLD = 5
     this.xhr = undefined
     app.on('fetched:book', () => {
-      let uuid = this.model.getUUID()
+      let book = app.getModel('book')
+        , uuid = book.getUUID()
         , version
         , versionTable = new Map(this.getFromLocalStorage())
 
@@ -62,7 +31,7 @@ class Loader {
       let config = {
         'name': 'komic'
       , 'version': version
-      , 'storeName': this.model.getBookTitle()+uuid
+      , 'storeName': book.getTitle()+uuid
       }
       this.store = new Store(config)
     }, this)
@@ -79,13 +48,14 @@ class Loader {
 
   preloadImages() {
     this.stopLoading()
-    let model = this.model
-      , total = model.getTotalPage()
-      , currentPage = model.getCurrentPage()
+    let book = app.getModel('book')
+      , total = book.getBookTotalPage()
+      , currentPage = book.get('currentPage')
       , start = currentPage + 1
       , end = start + this.THRESHOLD > total ? total + 1 : start + this.THRESHOLD
       , pages = _.range(start, end)
-      , urls = pages.map((val) => { return model.getImageUri(val) })
+      , urls = _.uniq(
+        pages.map((page) => { return book.getImageUri({ page: page }) }))
       , cachedUrls = []
       , self = this
 
@@ -118,23 +88,23 @@ class Loader {
 
   loadCurrentImage({ requestEvents }) {
     this.stopLoading()
-    let model = this.model
-      , page = model.getCurrentPage()
-      , src = model.getImageUri(page)
+    let book = app.getModel('book')
+      , page = book.get('currentPage')
+      , src = book.getImageUri({ page: page })
       , noop = function() {}
       , self = this
 
     return this.hasLoaded(src).then(() => {
-      return Promise.resolve()
+      return this.pickCachedImage(page)
     }, () => {
       return new Promise((resolve, reject) => {
         self.store.getItem(src).then((imageBlob) => {
-          resolve()
+          resolve(imageBlob)
         }, () => {
           self.fetch({ url: src, events: requestEvents })
             .then((imageBlob) => {
                self.storeCurrentImage(imageBlob).then(() => {
-                 resolve()
+                 resolve(imageBlob)
                }, noop)
             })
         })
@@ -149,7 +119,7 @@ class Loader {
   }
 
   storeCurrentImage(val) {
-    let key = this.model.getCurrentImageUri()
+    let key = app.getModel('book').getCurrentImageUri()
       , self = this
 
     return this.hasLoaded(key).catch(() => {
@@ -164,17 +134,15 @@ class Loader {
   }
 
   pickCachedImage(page) {
-    let url = this.model.getImageUri(page)
+    let book = app.getModel('book')
+      , url = book.getImageUri({ page: page })
 
-    return (
-      this.store.getItem(url).then((cached) => {
-        return window.URL.createObjectURL(cached)
-      })
-    )
+    return this.store.getItem(url)
   }
 
   hasLoaded(key) {
-    let url = key||this.model.getCurrentImageUri()
+    let book = app.getModel('book')
+      , url = key || book.getCurrentImageUri()
     return this.store.getItem(url)
   }
 }

@@ -10,11 +10,13 @@ export default class extends React.Component {
       , scalingMethod = form.find('select[name=scaling-method]').val()
       , mousePositionDragImage = form.find('input[name=mouse-position-drag-image]')
           .prop("checked")
+      , autoSplit = form.find('input[name=auto-split]').prop("checked")
       , canvas = app.getModel('canvas')
 
     canvas.set('scalingMethod', scalingMethod)
     canvas.set('turnpageMethod', turnpageMethod)
     canvas.set('mousePositionDragImage', mousePositionDragImage)
+    canvas.set('autoSplit', autoSplit)
   }
 
   renderScalingMethodSelect() {
@@ -80,6 +82,24 @@ export default class extends React.Component {
     )
   }
 
+  renderAutoSplitCheckbox() {
+    var canvas = app.getModel('canvas')
+    return (
+      <div className="form-group">
+        <div className="right-block">
+          <div className="checkbox">
+            <label>
+              <input type="checkbox"
+                defaultChecked={ canvas.get('autoSplit') }
+                name="auto-split"
+                /> 自动分页
+            </label>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   renderMousePositionDragImageCheckbox() {
     var canvas = app.getModel('canvas')
     return (
@@ -107,6 +127,7 @@ export default class extends React.Component {
           { this.renderScalingMethodSelect() }
           { this.renderTurnpageMethodSelect() }
           { this.renderMousePositionDragImageCheckbox() }
+          { this.renderAutoSplitCheckbox() }
         </form>
       </div>
     )

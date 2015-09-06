@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import $ from 'jquery'
 
 import app from 'app'
+import _ from 'mods/utils'
 import routes from 'routes'
 import Panel from './panel'
 
@@ -11,7 +12,7 @@ class ThumbViewLink extends React.Component {
     e.preventDefault()
     app.trigger('toggle:thumbview', false)
     var router = app.get('router')
-    router.transitionTo(this.props.to, this.props.params)
+    router.transitionTo(this.props.to, this.props.params, this.props.query)
   }
 
   render() {
@@ -41,20 +42,28 @@ export default class extends React.Component {
 
   renderItem(thumb, index) {
     var canvas = app.getModel('canvas')
-      , currentPage = canvas.get('currentPage')
+      , book = app.getModel('book')
+      , currentPage = book.get('currentPage')
       , page = thumb.page
-      , size = thumb.size
-      , useTag = `<use xlink:href=${thumb.src}>`
+      , viewBoxSize = thumb.viewBoxSize
       , isCurrent = +page === +currentPage
       , klass = isCurrent ? "item current" : "item"
+      , useTag = () => {
+          var {width, height} = thumb.useElementSize
+          return (
+              `<use xlink:href=${thumb.src} width=${width}`
+            + ` height=${height} x=${-thumb.positionX} />`
+          )
+        }
 
     return (
       <li className={ klass } key={ index }>
         <ThumbViewLink to="page" params={{ page: page }}
+          query={ canvas.get('autoSplit') ? _.pick(thumb, 'splitedIndex') : null }
           ref={ isCurrent ? 'current' : null }
-          className="thumb" { ...size }>
-          <svg className="thumb" { ...size }
-            dangerouslySetInnerHTML={{__html: useTag}}>
+          className="thumb" { ...viewBoxSize }>
+          <svg className="thumb" { ...viewBoxSize }
+            dangerouslySetInnerHTML={{__html: useTag()}}>
           </svg>
         </ThumbViewLink>
       </li>

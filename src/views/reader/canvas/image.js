@@ -6,8 +6,6 @@ import Backbone from 'backbone'
 import _ from 'mods/utils'
 import loader from 'manager/loader'
 
-import VerticalAlignMiddle from 'widgets/vertical_align_middle'
-
 const win = $(window)
     , MOUSE_RIGHT_BUTTON = 2
     , SCROLL_DURATION = 230
@@ -97,11 +95,7 @@ export default class extends React.Component {
     this.guid = _.uniqueId()
     this.manager = this.props.manager
     this.model = new Model({ manager: this.manager })
-    this.state = { display: true, loaded: false, url: undefined }
-  }
-
-  componentWillReceiveProps() {
-    this.state = { loaded: false}
+    this.state = { display: true }
   }
 
   componentWillMount() {
@@ -144,9 +138,9 @@ export default class extends React.Component {
   }
 
   turnPage(direction) {
-    var canvas = app.getModel('canvas')
+    var book = app.getModel('book')
 
-    canvas.trigger('turn:page', { direction })
+    book.trigger('turn:page', { direction })
   }
 
   turnPrevPage() {
@@ -201,30 +195,16 @@ export default class extends React.Component {
     this::ContextMenuHandlers[canvas.get('turnpageMethod')](e)
   }
 
-  //XXX(kyon) how to render async data
   render() {
-    let self = this
-      , currentPage = app.getModel('canvas').get('currentPage')
-
-    if (this.state.loaded) {
-      return this.renderWithImage()
-    } else {
-      loader.pickCachedImage(currentPage).then((src) => {
-        self.setState({ loaded: true, url: src })
-      })
-      return this.renderWithLoading()
-    }
-  }
-
-  renderWithImage() {
     var book = app.getModel('book')
-      , currentPage = app.getModel('canvas').get('currentPage')
-      , img = { ...book.getCurrentImage(currentPage) }
-
-    img.src = this.state.url
+      , canvas = app.getModel('canvas')
+      , { width, height } = book.getCurrentImage()
 
     return (
-      <img { ...img }
+      <img
+        src={ this.props.src }
+        width={ width }
+        height={ height }
         key={ _.uniqueId() }
         style={{ display: this.state.display ? 'block' : 'none' }}
         ref="image"
@@ -236,18 +216,6 @@ export default class extends React.Component {
         onLoad={ ::loader.preloadImages}
         onContextMenu={ this.handleContextMenu }
         />
-    )
-  }
-
-  renderWithLoading() {
-    return (
-      <div className="canvas">
-        <VerticalAlignMiddle style={
-          { width: '100%', height: '100%', textAlign: 'center' }
-          }>
-          载入中
-        </VerticalAlignMiddle>
-      </div>
     )
   }
 }

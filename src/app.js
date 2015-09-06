@@ -34,14 +34,14 @@ class AppModel extends Model {
   }
 
   createCanvasModel() {
-    var bookModel = this.getModel('book')
-      , canvasModel = new CanvasModel(bookModel.getCanvasModelInfo())
+    var canvasModel = new CanvasModel()
     this.setModel('canvas', canvasModel)
     return canvasModel
   }
 
   createBookModel() {
-    this.setModel('book', new BookModel())
+    this.setModel('book', new BookModel({
+      canvas: this.getModel('canvas') }))
     return this.getModel('book')
   }
 }

@@ -13,8 +13,8 @@ export default class extends React.Component {
   }
 
   render() {
-    var canvasModel = app.getModel('canvas')
-      , currentPage = canvasModel.get('currentPage')
+    var bookModel = app.getModel('book')
+      , currentPage = bookModel.get('currentPage')
 
     return (
       <div className="aside">

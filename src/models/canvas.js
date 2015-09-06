@@ -1,12 +1,10 @@
 import { Model } from 'backbone'
 
+
 export default class extends Model {
 
   constructor(options) {
     super(options)
-    if (options.totalPage && options.totalPage > 0) {
-      this.set('currentPage', 1)
-    }
     this.on('change', this.saveToLocalStorage)
   }
 
@@ -22,41 +20,11 @@ export default class extends Model {
   defaults() {
     return (
       this.getFromLocalStorage() || {
-        totalPage: 0
-      , currentPage: 0
-      , turnpageMethod: 'CLICK'
+        turnpageMethod: 'CLICK'
       , scalingMethod: 'AUTO'
       , mousePositionDragImage: false
+      , autoSplit: false
       })
-  }
-
-  setCurrentPage(currentPage) {
-    currentPage = +currentPage
-    var totalPage = this.get('totalPage')
-    if (currentPage > totalPage) {
-      currentPage = totalPage
-    }
-
-    if (currentPage < 1) {
-      currentPage = 1
-    }
-
-    this.set('currentPage', currentPage)
-    return this
-  }
-
-  turnPage({ direction }) {
-    var currentPage = this.get('currentPage')
-    this.setCurrentPage(currentPage
-      + (direction === 'prevPage' ? -1 : 1))
-  }
-
-  currentIsLastPage() {
-    return this.get('currentPage') === this.get('totalPage')
-  }
-
-  currentIsFirstPage() {
-    return this.get('currentPage') === 1
   }
 
 }
