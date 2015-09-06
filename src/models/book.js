@@ -3,6 +3,7 @@ import _ from 'mods/utils'
 import browser from 'mods/browser'
 
 const FIRST_PAGE_INDEX = 0
+    , FIRST_PAGE = FIRST_PAGE_INDEX + 1
 class Content extends Model {
 
   @_.Memoize()
@@ -167,7 +168,7 @@ export default class extends Model {
   }
 
   getBookCoverSize() {
-    var cover = this.getImage({ index: FIRST_PAGE_INDEX })
+    var cover = this.getImage({ page: FIRST_PAGE })
     return {
       width: Math.ceil(cover.width / cover.height * 220)
     , height: 220
@@ -180,7 +181,7 @@ export default class extends Model {
 
   getBookCoverImg() {
     return {
-      ...this.getImage({ index: FIRST_PAGE_INDEX })
+      ...this.getImage({ page: FIRST_PAGE })
     , ...this.getBookCoverSize()
     }
   }
