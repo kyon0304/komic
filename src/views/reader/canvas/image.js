@@ -198,7 +198,6 @@ export default class extends React.Component {
   render() {
     var book = app.getModel('book')
       , canvas = app.getModel('canvas')
-      , currentPage = app.getModel('canvas').get('currentPage')
       , { width, height } = book.getCurrentImage()
 
     return (
