@@ -4,7 +4,6 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 
 import _ from 'mods/utils'
-import loader from 'manager/loader'
 
 const win = $(window)
     , MOUSE_RIGHT_BUTTON = 2
@@ -199,6 +198,7 @@ export default class extends React.Component {
     var book = app.getModel('book')
       , canvas = app.getModel('canvas')
       , { width, height } = book.getCurrentImage()
+      , loader = app.getModel('loader')
 
     return (
       <img

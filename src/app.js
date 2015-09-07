@@ -1,6 +1,8 @@
 import { Model } from 'backbone'
 import CanvasModel from 'models/canvas'
 import BookModel from 'models/book'
+import ProgressIndicator from 'models/progressIndicator'
+import Loader from 'models/loader'
 
 class AppModel extends Model {
 
@@ -9,6 +11,8 @@ class AppModel extends Model {
     this.modelAndCreateFuncMap = {
         book: 'createBookModel'
       , canvas: 'createCanvasModel'
+      , progressIndicator: 'createProgressIndicatorModel'
+      , loader: 'createLoaderModel'
     }
   }
 
@@ -43,6 +47,18 @@ class AppModel extends Model {
     this.setModel('book', new BookModel({
       canvas: this.getModel('canvas') }))
     return this.getModel('book')
+  }
+
+  createProgressIndicatorModel() {
+    let progressIndicator = new ProgressIndicator()
+    this.setModel('progressIndicator', progressIndicator)
+    return progressIndicator
+  }
+
+  createLoaderModel() {
+    let loaderModel = new Loader()
+    this.setModel('loader', loaderModel)
+    return loaderModel
   }
 }
 

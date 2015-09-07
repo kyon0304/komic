@@ -1,11 +1,11 @@
 import co from 'co'
 
 import app from 'app'
-import Store from './store'
+import Store from 'manager/store'
 import request from 'mods/request'
 import _ from 'mods/utils'
 
-class Loader {
+export default class Loader {
   constructor (options) {
     this.THRESHOLD = 5
     this.xhr = undefined
@@ -49,6 +49,7 @@ class Loader {
   preloadImages() {
     this.stopLoading()
     let book = app.getModel('book')
+      , indicator = app.getModel('progressIndicator')
       , total = book.getBookTotalPage()
       , currentPage = book.get('currentPage')
       , start = currentPage + 1
@@ -59,9 +60,7 @@ class Loader {
       , cachedUrls = []
       , self = this
 
-    this.store.iterate((val, key) => {
-      cachedUrls.push(key)
-    }).then(() => {
+    this.getAllCachedImageUrls(cachedUrls).then(() => {
       return _.difference(urls, cachedUrls)
     }).then((preloadUrls) => {
       co.wrap(function* gen(preloadURLs) {
@@ -72,6 +71,9 @@ class Loader {
           try {
             imageBlob = yield self.fetch({url: src})
             self.storeImage(src, imageBlob)
+            let cachedPage = currentPage + self.THRESHOLD - preloadURLs.length
+            indicator.setPercent(cachedPage, total, 'loaded')
+            indicator.trigger('change:loadedPercent')
             preloadURLs.splice(0, 1)
           } catch(e) {
             break
@@ -140,11 +142,15 @@ class Loader {
     return this.store.getItem(url)
   }
 
+  getAllCachedImageUrls(cachedUrls) {
+    return this.store.iterate((val, key) => {
+      cachedUrls.push(key)
+    })
+  }
+
   hasLoaded(key) {
     let book = app.getModel('book')
       , url = key || book.getCurrentImageUri()
     return this.store.getItem(url)
   }
 }
-
-export default new Loader

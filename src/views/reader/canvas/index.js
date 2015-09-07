@@ -10,7 +10,6 @@ import request from 'mods/request'
 import VerticalAlignMiddle from 'widgets/vertical_align_middle'
 import ImageManager from './image_manager'
 import CanvasImage from './image'
-import loader from 'manager/loader'
 
 const LoadingStates = {
   LOADED: Symbol()
@@ -152,6 +151,7 @@ export default class extends React.Component {
   }
 
   renderAndLoadImage() {
+    let loader = app.getModel('loader')
     loader.loadCurrentImage({
       requestEvents: {
         [request.Events.PROGRESS]: (e)=> {
