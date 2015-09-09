@@ -14,7 +14,6 @@ $(document).on('click', 'a[href="#"]', (e) => {
 
 var canvasModel = app.createModel('canvas')
   , bookModel = app.createModel('book')
-  , loader = app.createModel('loader')
   , appViewWrapper = $('<div>', {'class': 'react-app-wrapper'})
 
 $('body').prepend(appViewWrapper)

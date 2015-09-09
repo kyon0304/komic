@@ -5,7 +5,7 @@ import Store from 'manager/store'
 import request from 'mods/request'
 import _ from 'mods/utils'
 
-export default class Loader {
+class Loader {
   constructor (options) {
     this.THRESHOLD = 5
     this.xhr = undefined
@@ -150,3 +150,4 @@ export default class Loader {
     return this.store.getItem(url)
   }
 }
+export default new Loader

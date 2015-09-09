@@ -1,7 +1,6 @@
 import { Model } from 'backbone'
 import CanvasModel from 'models/canvas'
 import BookModel from 'models/book'
-import Loader from 'models/loader'
 
 class AppModel extends Model {
 
@@ -10,7 +9,6 @@ class AppModel extends Model {
     this.modelAndCreateFuncMap = {
         book: 'createBookModel'
       , canvas: 'createCanvasModel'
-      , loader: 'createLoaderModel'
     }
   }
 
@@ -45,12 +43,6 @@ class AppModel extends Model {
     this.setModel('book', new BookModel({
       canvas: this.getModel('canvas') }))
     return this.getModel('book')
-  }
-
-  createLoaderModel() {
-    let loaderModel = new Loader()
-    this.setModel('loader', loaderModel)
-    return loaderModel
   }
 }
 

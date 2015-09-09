@@ -23,11 +23,9 @@ export default class extends React.Component {
 
   setCurrentPage(props) {
     var book = app.getModel('book')
-      , loader = app.getModel('loader')
       , page = props.params && +props.params.page
       , splitedIndex = +props.query.splitedIndex || 0
       , total = book.getBookTotalPage()
-      , cachedUrls = []
     book.setCurrentPage({ page: page, splitedIndex: splitedIndex })
     book.setProgress()
   }
