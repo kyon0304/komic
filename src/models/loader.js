@@ -49,7 +49,6 @@ export default class Loader {
   preloadImages() {
     this.stopLoading()
     let book = app.getModel('book')
-      , indicator = app.getModel('progressIndicator')
       , total = book.getBookTotalPage()
       , currentPage = book.get('currentPage')
       , start = currentPage + 1
@@ -71,9 +70,6 @@ export default class Loader {
           try {
             imageBlob = yield self.fetch({url: src})
             self.storeImage(src, imageBlob)
-            let cachedPage = currentPage + self.THRESHOLD - preloadURLs.length
-            indicator.setPercent(cachedPage, total, 'loaded')
-            indicator.trigger('change:loadedPercent')
             preloadURLs.splice(0, 1)
           } catch(e) {
             break

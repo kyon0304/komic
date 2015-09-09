@@ -93,6 +93,7 @@ export default class extends Model {
       totalPage: 0
     , currentPage: 0
     , splitedIndex: 0
+    , progress: 0
     }
   }
 
@@ -111,6 +112,11 @@ export default class extends Model {
     this.set('currentPage', currentPage)
     this.set('splitedIndex', splitedIndex)
     return this
+  }
+
+  setProgress() {
+    let progress = this.get('currentPage') * 100 / this.get('totalPage')
+    this.set('progress', progress)
   }
 
   turnPage({ direction }) {
