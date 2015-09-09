@@ -1,7 +1,7 @@
 import co from 'co'
 
 import app from 'app'
-import Store from './store'
+import Store from 'manager/store'
 import request from 'mods/request'
 import _ from 'mods/utils'
 
@@ -59,9 +59,7 @@ class Loader {
       , cachedUrls = []
       , self = this
 
-    this.store.iterate((val, key) => {
-      cachedUrls.push(key)
-    }).then(() => {
+    this.getAllCachedImageUrls(cachedUrls).then(() => {
       return _.difference(urls, cachedUrls)
     }).then((preloadUrls) => {
       co.wrap(function* gen(preloadURLs) {
@@ -140,11 +138,16 @@ class Loader {
     return this.store.getItem(url)
   }
 
+  getAllCachedImageUrls(cachedUrls) {
+    return this.store.iterate((val, key) => {
+      cachedUrls.push(key)
+    })
+  }
+
   hasLoaded(key) {
     let book = app.getModel('book')
       , url = key || book.getCurrentImageUri()
     return this.store.getItem(url)
   }
 }
-
 export default new Loader

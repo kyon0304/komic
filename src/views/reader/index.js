@@ -8,6 +8,7 @@ import Thumbview from './thumbview'
 import ModalView from './modals/index'
 import TipView from './tip'
 import app from 'app'
+import ProgressIndicator from './progressIndicator'
 
 export default class extends React.Component {
 
@@ -20,12 +21,13 @@ export default class extends React.Component {
     this.setCurrentPage(nextProps)
   }
 
-
   setCurrentPage(props) {
     var book = app.getModel('book')
       , page = props.params && +props.params.page
       , splitedIndex = +props.query.splitedIndex || 0
+      , total = book.getBookTotalPage()
     book.setCurrentPage({ page: page, splitedIndex: splitedIndex })
+    book.setProgress()
   }
 
   componentWillMount() {
@@ -45,9 +47,13 @@ export default class extends React.Component {
   }
 
   render() {
+    let book = app.getModel('book')
 
     return (
       <div>
+        <ProgressIndicator ref='progressIndicator'
+          viewed = { book.get('progress') }
+        />
         <Panel ref="panel"/>
           <Canvas ref="canvas" />
           { this.state.thumbview && <Thumbview ref="thumbview" /> }
